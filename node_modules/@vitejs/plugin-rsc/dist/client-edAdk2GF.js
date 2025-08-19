@@ -1,0 +1,23 @@
+//#region ../../node_modules/.pnpm/rsc-html-stream@0.0.6/node_modules/rsc-html-stream/client.js
+let encoder = new TextEncoder();
+let streamController;
+let rscStream = new ReadableStream({ start(controller) {
+	if (typeof window === "undefined") return;
+	let handleChunk = (chunk) => {
+		if (typeof chunk === "string") controller.enqueue(encoder.encode(chunk));
+		else controller.enqueue(chunk);
+	};
+	window.__FLIGHT_DATA ||= [];
+	window.__FLIGHT_DATA.forEach(handleChunk);
+	window.__FLIGHT_DATA.push = (chunk) => {
+		handleChunk(chunk);
+	};
+	streamController = controller;
+} });
+if (typeof document !== "undefined" && document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => {
+	streamController?.close();
+});
+else streamController?.close();
+
+//#endregion
+export { rscStream };
