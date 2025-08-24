@@ -121,6 +121,19 @@ const handleDelete = async (driverId: string) => {
   }
 };
 
+// Helper pour les couleurs de catégories
+  const getCategoryBadgeClass = (category: string): string => {
+    const badgeClasses: { [key: string]: string } = {
+      'Supercar': 'badge-supercar',
+      'Super1600': 'badge-super1600', 
+      'Juniors': 'badge-juniors',
+      'Féminines': 'badge-feminines',
+      'D3': 'badge-d3',
+      'D4': 'badge-d4'
+    };
+    return badgeClasses[category] || 'badge-supercar';
+  };
+
   return (
     <div style={{ padding: '2rem' }}>
       <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
@@ -292,64 +305,93 @@ const handleDelete = async (driverId: string) => {
         </div>
       )}
 
-      {/* Liste des pilotes */}
-      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#667eea', color: 'white' }}>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>N° Voiture</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Pilote</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Catégorie</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Équipe</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Année</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {drivers.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
-                  👤 Aucun pilote enregistré
-                </td>
-              </tr>
-            ) : (
-              drivers.map((driver) => (
-                <tr key={driver.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{ 
-                      background: '#667eea', 
-                      color: 'white', 
-                      padding: '0.25rem 0.75rem', 
-                      borderRadius: '20px', 
-                      fontWeight: 'bold' 
-                    }}>
-                      #{driver.carNumber}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem', fontWeight: '500', color: '#333'  }}>{driver.name}</td>
-                  <td style={{ padding: '1rem' , color: '#333' }}>{driver.category}</td>
-                  <td style={{ padding: '1rem', color: '#333'  }}>{driver.team || '—'}</td>
-                  <td style={{ padding: '1rem', color: '#333' }}>{driver.year}</td>
-                  <td style={{ padding: '1rem' }}>
-  <button
-    onClick={() => handleEdit(driver)}
-    style={{ marginRight: '0.5rem', padding: '0.25rem 0.5rem', background: '#ffc107', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-  >
-    ✏️ Modifier
-  </button>
-  <button
-    onClick={() => handleDelete(driver.id)}
-    style={{ padding: '0.25rem 0.5rem', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-  >
-    🗑️ Supprimer
-  </button>
-</td>
-
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      {/* Liste des pilotes en cartes */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
+        gap: '1.5rem'
+      }}>
+        {drivers.length === 0 ? (
+          <div style={{ 
+            gridColumn: '1 / -1',
+            background: 'rgba(255,255,255,0.9)',
+            borderRadius: '16px',
+            padding: '3rem',
+            textAlign: 'center',
+            color: '#666',
+            backdropFilter: 'blur(12px)',
+            border: '2px dashed #ccc'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏎️</div>
+            <h3 style={{ color: '#333', marginBottom: '0.5rem' }}>Aucun pilote enregistré</h3>
+            <p>Cliquez sur "Ajouter un pilote" pour commencer</p>
+          </div>
+        ) : (
+          drivers.map((driver) => (
+            <div key={driver.id} className="pilot-card">
+              {/* Numéro et nom */}
+              <div className="pilot-number">
+                <span>🏎️</span>
+                #{driver.carNumber}
+              </div>
+              
+              <div className="pilot-name">
+                {driver.name}
+              </div>
+              
+              {/* Informations */}
+              <div className="pilot-info">
+                <span className={`pilot-badge ${getCategoryBadgeClass(driver.category)}`}>
+                  🏆 {driver.category}
+                </span>
+                
+                {driver.team && (
+                  <span className="pilot-badge" style={{ 
+                    background: 'linear-gradient(135deg, #e3f2fd, #bbdefb)', 
+                    color: '#1565c0' 
+                  }}>
+                    🏁 {driver.team}
+                  </span>
+                )}
+                
+                <span className="pilot-badge" style={{ 
+                  background: 'linear-gradient(135deg, #f3e5f5, #e1bee7)', 
+                  color: '#7b1fa2' 
+                }}>
+                  📅 {driver.year}
+                </span>
+                
+                <span className="pilot-badge badge-engaged">
+                  ✅ Actif
+                </span>
+              </div>
+              
+              {/* Actions */}
+              <div className="pilot-actions">
+                <button
+                  onClick={() => handleEdit(driver)}
+                  style={{
+                    background: 'linear-gradient(135deg, #ffc107, #ff9800)',
+                    color: 'white'
+                  }}
+                  title="Modifier le pilote"
+                >
+                  ✏️
+                </button>
+                <button
+                  onClick={() => handleDelete(driver.id)}
+                  style={{
+                    background: 'linear-gradient(135deg, #f44336, #d32f2f)',
+                    color: 'white'
+                  }}
+                  title="Supprimer le pilote"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <p style={{ marginTop: '1rem', color: '#666' }}>
