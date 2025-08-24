@@ -168,6 +168,32 @@ export default function MeetingManagement() {
     }));
   };
 
+  // Helper pour les icônes de catégories
+  const getCategoryIcon = (category: string): string => {
+    const icons: { [key: string]: string } = {
+      'Supercar': '🏎️',
+      'Super1600': '🚗',
+      'Juniors': '🏃‍♂️',
+      'Féminines': '🏃‍♀️',
+      'D3': '🚙',
+      'D4': '🚐'
+    };
+    return icons[category] || '🏁';
+  };
+
+  // Helper pour les classes CSS des catégories
+  const getCategoryClass = (category: string): string => {
+    const classes: { [key: string]: string } = {
+      'Supercar': 'badge-supercar',
+      'Super1600': 'badge-super1600',
+      'Juniors': 'badge-juniors',
+      'Féminines': 'badge-feminines',
+      'D3': 'badge-d3',
+      'D4': 'badge-d4'
+    };
+    return classes[category] || 'badge-supercar';
+  };
+
   return (
     <div style={{ padding: '2rem' }}>
       <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
@@ -207,73 +233,77 @@ export default function MeetingManagement() {
       {/* Bouton création */}
       <button
         onClick={() => setShowForm(!showForm)}
-        style={{
-          padding: '0.75rem 1.5rem',
-          background: '#667eea',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          marginBottom: '2rem',
-          cursor: 'pointer'
-        }}
+        className={showForm ? 'cancel-btn' : 'modern-btn'}
+        style={{ marginBottom: '2rem' }}
       >
-        {showForm ? '❌ Annuler' : '➕ Créer un meeting'}
+        <span>{showForm ? '❌' : '🏁'}</span>
+        {showForm ? 'Annuler' : 'Créer un meeting'}
       </button>
 
       {/* Formulaire de création */}
       {showForm && (
-        <div style={{ 
-          background: '#f8f9fa', 
-          padding: '1.5rem', 
-          borderRadius: '8px', 
-          marginBottom: '2rem',
-          color: '#333' 
-        }}>
-          <h3>➕ Nouveau meeting</h3>
+        <div className="modern-form">
+          <h3 className="form-title">
+            <span>🏁</span>
+            Nouveau Meeting
+          </h3>
+          
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Nom du meeting *</label>
+            <div className="form-grid">
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>🏆</span>
+                  Nom du meeting
+                </label>
                 <input
                   type="text"
                   required
                   value={newMeeting.name}
                   onChange={(e) => setNewMeeting({...newMeeting, name: e.target.value})}
                   placeholder="ex: Meeting 1 - Lessay"
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  className="modern-input"
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Lieu *</label>
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>📍</span>
+                  Lieu
+                </label>
                 <input
                   type="text"
                   required
                   value={newMeeting.location}
                   onChange={(e) => setNewMeeting({...newMeeting, location: e.target.value})}
                   placeholder="ex: Circuit de Lessay"
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  className="modern-input"
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Date *</label>
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>📅</span>
+                  Date
+                </label>
                 <input
                   type="date"
                   required
                   value={newMeeting.date}
                   onChange={(e) => setNewMeeting({...newMeeting, date: e.target.value})}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  className="modern-input"
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Nombre de manches qualifs *</label>
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>🏃</span>
+                  Nombre de manches qualifs
+                </label>
                 <select
                   required
                   value={newMeeting.qualifyingRounds}
                   onChange={(e) => setNewMeeting({...newMeeting, qualifyingRounds: parseInt(e.target.value)})}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  className="modern-select"
                 >
                   <option value={1}>1 manche (météo)</option>
                   <option value={2}>2 manches</option>
@@ -282,139 +312,194 @@ export default function MeetingManagement() {
                 </select>
               </div>
             </div>
-
-            {/* Sélection des catégories */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>
-                Catégories participantes ({newMeeting.categories.length}/6) :
+            {/* Sélection des catégories avec nouveau style */}
+            <div className="form-group" style={{ marginBottom: '2rem' }}>
+              <label className="form-label">
+                <span>🏆</span>
+                Catégories participantes ({newMeeting.categories.length}/6)
               </label>
               
               <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(3, 1fr)', 
-                gap: '0.5rem',
-                border: '1px solid #ccc',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                backgroundColor: 'white'
+                gap: '1rem',
+                marginTop: '1rem'
               }}>
                 {CATEGORIES.map(category => (
                   <div
                     key={category}
                     onClick={() => toggleCategory(category)}
                     style={{
-                      padding: '0.5rem',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
+                      padding: '1rem',
+                      border: '2px solid',
+                      borderColor: newMeeting.categories.includes(category) 
+                        ? 'rgba(255, 107, 53, 0.8)' 
+                        : 'rgba(30, 60, 114, 0.3)',
+                      borderRadius: '12px',
                       cursor: 'pointer',
-                      backgroundColor: newMeeting.categories.includes(category) ? '#667eea' : 'white',
-                      color: newMeeting.categories.includes(category) ? 'white' : '#333',
-                      transition: 'all 0.2s',
-                      textAlign: 'center'
+                      background: newMeeting.categories.includes(category)
+                        ? 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%)'
+                        : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
+                      backdropFilter: 'blur(8px)',
+                      transition: 'all 0.3s ease',
+                      textAlign: 'center',
+                      fontWeight: '600',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!newMeeting.categories.includes(category)) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(30, 60, 114, 0.2)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!newMeeting.categories.includes(category)) {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }
                     }}
                   >
+                    <span>{getCategoryIcon(category)}</span>
                     {category}
+                    {newMeeting.categories.includes(category) && (
+                      <span style={{ color: '#FF6B35', marginLeft: '0.5rem' }}>✓</span>
+                    )}
                   </div>
                 ))}
               </div>
               
-              <small style={{ color: '#666', marginTop: '0.5rem', display: 'block' }}>
-                Sessions créées par catégorie : Essais chronos + {newMeeting.qualifyingRounds} qualifs + 2 demi-finales + 1 finale = {newMeeting.qualifyingRounds + 4} sessions
-              </small>
+              <div style={{ 
+                marginTop: '1rem', 
+                fontSize: '0.9rem', 
+                color: '#666',
+                textAlign: 'center',
+                background: 'rgba(102, 126, 234, 0.1)',
+                padding: '0.75rem',
+                borderRadius: '8px'
+              }}>
+                💡 Sessions créées par catégorie : Essais chronos + {newMeeting.qualifyingRounds} qualifs + 2 demi-finales + 1 finale = {newMeeting.qualifyingRounds + 4} sessions
+              </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={newMeeting.categories.length === 0}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: newMeeting.categories.length > 0 ? '#28a745' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: newMeeting.categories.length > 0 ? 'pointer' : 'not-allowed'
-              }}
-            >
-              ➕ Créer le meeting
-            </button>
+            <div className="form-actions">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="cancel-btn"
+              >
+                <span>❌</span>
+                Annuler
+              </button>
+              
+              <button 
+                type="submit" 
+                disabled={newMeeting.categories.length === 0}
+                className="submit-btn"
+                style={{
+                  opacity: newMeeting.categories.length > 0 ? 1 : 0.5,
+                  cursor: newMeeting.categories.length > 0 ? 'pointer' : 'not-allowed'
+                }}
+              >
+                <span>🏁</span>
+                Créer le meeting
+              </button>
+            </div>
           </form>
         </div>
       )}
 
       {/* Liste des meetings */}
-      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#667eea', color: 'white' }}>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Meeting</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Date</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Lieu</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Catégories</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Sessions</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {meetings.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: '#666' }}>
-                  📅 Aucun meeting créé pour {selectedYear}
-                </td>
-              </tr>
-            ) : (
-              meetings.map((meeting) => (
-                <tr key={meeting.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '1rem', fontWeight: '500', color: '#333' }}>{meeting.name}</td>
-                  <td style={{ padding: '1rem', color: '#333' }}>
-                    {new Date(meeting.date).toLocaleDateString('fr-FR')}
-                  </td>
-                  <td style={{ padding: '1rem', color: '#333' }}>{meeting.location}</td>
-                  <td style={{ padding: '1rem', color: '#333' }}>
-                    <div style={{ fontSize: '0.85rem' }}>
-                      {meeting.categories.map((cat: string) => (
-                        <span key={cat} style={{
-                          display: 'inline-block',
-                          background: '#f0f0f0',
-                          padding: '0.15rem 0.4rem',
-                          borderRadius: '3px',
-                          marginRight: '0.25rem',
-                          marginBottom: '0.25rem'
-                        }}>
-                          {cat}
-                        </span>
-                      ))}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {meetings.length === 0 ? (
+          <div style={{ 
+            background: 'rgba(255,255,255,0.9)',
+            borderRadius: '16px',
+            padding: '3rem',
+            textAlign: 'center',
+            color: '#666',
+            backdropFilter: 'blur(12px)',
+            border: '2px dashed #ccc'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏁</div>
+            <h3 style={{ color: '#333', marginBottom: '0.5rem' }}>Aucun meeting créé pour {selectedYear}</h3>
+            <p>Cliquez sur "Créer un meeting" pour commencer</p>
+          </div>
+        ) : (
+          meetings.map((meeting) => {
+            const totalSessions = meeting.categories.length * (meeting.qualifyingRounds + 4);
+            const currentDate = new Date();
+            const meetingDate = new Date(meeting.date);
+            const status = meetingDate > currentDate ? 'upcoming' : 'completed';
+            
+            return (
+              <div key={meeting.id} className="meeting-card">
+                <div className="meeting-header">
+                  <div>
+                    <div className="meeting-title">
+                      🏁 {meeting.name}
                     </div>
-                  </td>
-                  <td style={{ padding: '1rem', color: '#333' }}>
-                    <div style={{ fontSize: '0.9rem' }}>
-                      <div>Essais chronos: {meeting.categories.length}</div>
-                      <div>Qualifs: {meeting.categories.length * meeting.qualifyingRounds}</div>
-                      <div>1/2 finales: {meeting.categories.length * 2}</div>
-                      <div>Finales: {meeting.categories.length}</div>
-                      <strong>Total: {meeting.categories.length * (meeting.qualifyingRounds + 4)}</strong>
+                    <div className="meeting-date">
+                      <span>📅</span>
+                      {new Date(meeting.date).toLocaleDateString('fr-FR', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
                     </div>
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <button
-                      onClick={() => handleDeleteMeeting(meeting.id)}
-                      style={{ 
-                        padding: '0.25rem 0.5rem', 
-                        background: '#dc3545', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer',
-                        fontSize: '0.8rem'
-                      }}
-                    >
-                      🗑️ Supprimer
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                    <div className="meeting-location">
+                      <span>📍</span> {meeting.location}
+                    </div>
+                  </div>
+                  
+                  <div className={`meeting-status status-${status}`}>
+                    {status === 'upcoming' ? '🔮 À venir' : '✅ Terminé'}
+                  </div>
+                </div>
+
+                <div className="meeting-categories">
+                  {meeting.categories.map((cat: string) => (
+                    <span key={cat} className={`category-pill ${getCategoryClass(cat)}`}>
+                      {getCategoryIcon(cat)} {cat}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="meeting-stats">
+                  <div className="stat-item">
+                    <span className="stat-number">{meeting.categories.length}</span>
+                    <span className="stat-label">Catégories</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-number">{meeting.qualifyingRounds}</span>
+                    <span className="stat-label">Qualifs</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-number">{meeting.categories.length * 2}</span>
+                    <span className="stat-label">Demi-finales</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-number">{totalSessions}</span>
+                    <span className="stat-label">Total Sessions</span>
+                  </div>
+                </div>
+
+                <div className="meeting-actions">
+                  <button
+                    onClick={() => handleDeleteMeeting(meeting.id)}
+                    className="delete-btn"
+                    title="Supprimer le meeting"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       <p style={{ marginTop: '1rem', color: '#666' }}>
