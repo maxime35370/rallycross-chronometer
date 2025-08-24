@@ -405,6 +405,18 @@ body {
   position: relative;
   overflow: hidden;
 }
+.filter-grid {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
 
 .filter-section::before {
   content: '';
@@ -416,6 +428,19 @@ body {
   background: var(--primary);
   border-radius: 20px 20px 0 0;
 }
+
+.filter-title {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #1a1a1a;
+  margin-bottom: 2rem; /* Plus d'espace pour les filtres */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+}
+
 
 .modern-form {
   background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
