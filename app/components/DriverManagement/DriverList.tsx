@@ -47,7 +47,8 @@ export default function DriverList() {
   });
 
   return () => unsubscribe();
-}, [selectedCategory, selectedYear]);
+  }, [selectedCategory, selectedYear]);
+
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,106 +140,88 @@ const handleDelete = async (driverId: string) => {
       <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
         👥 Gestion des Pilotes
       </h2>
-      <div style={{ 
-  background: '#f8f9fa', 
-  padding: '1rem', 
-  borderRadius: '8px', 
-  marginBottom: '1.5rem',
-  border: '1px solid #e9ecef'
-}}>
-  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'end' }}>
-    <div>
-      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-        🏆 Catégorie :
-      </label>
-      <select
-        value={selectedCategory}
-        onChange={(e) => setSelectedCategory(e.target.value)}
-        style={{ 
-          width: '100%',
-          padding: '0.5rem', 
-          borderRadius: '4px', 
-          border: '1px solid #ccc',
-          fontSize: '1rem',
-          color: '#333',
-          backgroundColor: 'white'
-        }}
-      >
-        {CATEGORIES.map(cat => (
-          <option key={cat} value={cat}>{cat}</option>
-        ))}
-      </select>
-    </div>
-    
-    <div>
-      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-        📅 Saison :
-      </label>
-      <select
-        value={selectedYear}
-        onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-        style={{ 
-          width: '100%',
-          padding: '0.5rem', 
-          borderRadius: '4px', 
-          border: '1px solid #ccc',
-          fontSize: '1rem',
-          color: '#333',
-          backgroundColor: 'white'
-        }}
-      >
-        <option value={2024}>2024</option>
-        <option value={2025}>2025</option>
-        <option value={2026}>2026</option>
-      </select>
-    </div>
-  </div>
-</div>
+      <div className="filter-section">
+        <h3 className="filter-title">
+          <span>🏎️</span>
+          Filtres Pilotes
+        </h3>
+        
+        <div className="filter-grid">
+          <div className="filter-group">
+            <label className="filter-label">
+              <span>🏆</span>
+              Catégorie
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="modern-select"
+            >
+              {CATEGORIES.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="filter-group">
+            <label className="filter-label">
+              <span>📅</span>
+              Saison
+            </label>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+              className="modern-select"
+            >
+              <option value={2024}>2024</option>
+              <option value={2025}>2025</option>
+              <option value={2026}>2026</option>
+            </select>
+          </div>
+        </div>
+      </div>
         
 
       {/* Bouton d'ajout */}
       <button
-        onClick={() => {
-            setShowForm(!showForm);
-            }}
-        style={{
-          padding: '0.75rem 1.5rem',
-          background: '#667eea',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          marginBottom: '2rem',
-          cursor: 'pointer'
-        }}
+        onClick={() => setShowForm(!showForm)}
+        className={showForm ? 'cancel-btn' : 'modern-btn'}
+        style={{ marginBottom: '2rem' }}
       >
-        {showForm ? '❌ Annuler' : '➕ Ajouter un pilote'}
+        <span>{showForm ? '❌' : '➕'}</span>
+        {showForm ? 'Annuler' : 'Ajouter un pilote'}
       </button>
 
       {/* Formulaire d'ajout */}
       {showForm && (
-        <div style={{ 
-          background: '#f8f9fa', 
-          padding: '1.5rem', 
-          borderRadius: '8px', 
-          marginBottom: '2rem',
-          color: '#333' 
-        }}>
-          <h3>➕ Nouveau pilote</h3>
+        <div className="modern-form">
+          <h3 className="form-title">
+            <span>🏎️</span>
+            Nouveau Pilote
+          </h3>
+          
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Nom du pilote *</label>
+            <div className="form-grid">
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>👤</span>
+                  Nom du pilote
+                </label>
                 <input
                   type="text"
                   required
                   value={newDriver.name}
                   onChange={(e) => setNewDriver({...newDriver, name: e.target.value})}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  placeholder="ex: Jean Dupont"
+                  className="modern-input"
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>N° de voiture *</label>
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>🔢</span>
+                  Numéro de voiture
+                </label>
                 <input
                   type="number"
                   required
@@ -246,17 +229,21 @@ const handleDelete = async (driverId: string) => {
                   max="999"
                   value={newDriver.carNumber}
                   onChange={(e) => setNewDriver({...newDriver, carNumber: e.target.value})}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  placeholder="ex: 23"
+                  className="modern-input"
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Catégorie *</label>
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>🏆</span>
+                  Catégorie
+                </label>
                 <select
                   required
                   value={newDriver.category}
                   onChange={(e) => setNewDriver({...newDriver, category: e.target.value})}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  className="modern-select"
                 >
                   {CATEGORIES.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -264,43 +251,55 @@ const handleDelete = async (driverId: string) => {
                 </select>
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Équipe</label>
+              <div className="form-group">
+                <label className="form-label">
+                  <span>🏁</span>
+                  Équipe
+                </label>
                 <input
                   type="text"
                   value={newDriver.team}
                   onChange={(e) => setNewDriver({...newDriver, team: e.target.value})}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                  placeholder="ex: Team Racing Pro"
+                  className="modern-input"
                 />
               </div>
-                <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#333' }}>Année *</label>
-                    <input
-                        type="number"
-                        required
-                        min="2020"
-                        max="2030"
-                        value={newDriver.year}
-                        onChange={(e) => setNewDriver({...newDriver, year: parseInt(e.target.value)})}
-                        style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                    />
-                </div>
+
+              <div className="form-group">
+                <label className="form-label required">
+                  <span>📅</span>
+                  Saison
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="2020"
+                  max="2030"
+                  value={newDriver.year}
+                  onChange={(e) => setNewDriver({...newDriver, year: parseInt(e.target.value)})}
+                  className="modern-input"
+                />
+              </div>
             </div>
 
-            <button 
-              type="submit" 
-              style={{
-                marginTop: '1rem',
-                padding: '0.75rem 1.5rem',
-                background: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              ➕ Ajouter
-            </button>
+            <div className="form-actions">
+              <button 
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="cancel-btn"
+              >
+                <span>❌</span>
+                Annuler
+              </button>
+              
+              <button 
+                type="submit" 
+                className="submit-btn"
+              >
+                <span>💾</span>
+                {editingDriver ? 'Modifier' : 'Ajouter'}
+              </button>
+            </div>
           </form>
         </div>
       )}
