@@ -65,6 +65,7 @@ export default function MeetingStandingsManagement() {
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [selectedMeeting, setSelectedMeeting] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedStandingView, setSelectedStandingView] = useState<string>('all');
 
   // Récupérer les meetings
   useEffect(() => {
@@ -393,7 +394,7 @@ export default function MeetingStandingsManagement() {
     return sortedStandings;
   };
 
-  // Calculer le classement final avec attribution des points meeting
+  // Calculer le classement intermédiaire avec attribution des points meeting
   const calculateFinalStandings = (): PilotStanding[] => {
     const qualifyingRaces = races.filter(race => race.type === 'qualifying');
     if (qualifyingRaces.length === 0) {
@@ -606,6 +607,35 @@ export default function MeetingStandingsManagement() {
           </select>
         </div>
 
+        {selectedMeeting && selectedCategory && qualifyingRaces.length > 0 && (
+          <div className="filters-section">
+            <div className="filter-item">
+              <label className="filter-label">
+                <span>📈</span>
+                Affichage du classement :
+              </label>
+              <select
+                value={selectedStandingView}
+                onChange={(e) => setSelectedStandingView(e.target.value)}
+                className="select-modern"
+                style={{ minWidth: '300px' }}
+              >
+                <option value="all">🏁 Tous les classements</option>
+                <option value="timetrials">⏱️ Essais chronométrés uniquement</option>
+                {qualifyingRaces.map((race, index) => (
+                  <option key={`intermediate-${index}`} value={`intermediate-${index}`}>
+                    📈 Après {index + 1} manche{index > 0 ? 's' : ''} (cumulé)
+                  </option>
+                ))}
+                <option value="final">🏅 Classement intermédiaire uniquement</option>
+                <option value="semifinal-recap">🥈 Récap demi-finales uniquement</option>
+                <option value="final-recap">🏆 Récap finale uniquement</option>
+                <option value="championship">👑 Points du meeting</option>
+              </select>
+            </div>
+          </div>
+        )}
+
         {/* STATS À DROITE */}
         {selectedMeeting && selectedCategory && (
           <div className="stats-container">
@@ -639,34 +669,35 @@ export default function MeetingStandingsManagement() {
 
       {/* Classements */}
       {selectedMeeting && selectedCategory && qualifyingRaces.length > 0 && (
-        <div className="content-section">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           {/* Essais Chronométrés */}
-          <StandingDisplay 
-            title="⏱️ Essais Chronométrés"
-            standings={timeTrialsPoints
-              .map(point => ({
-                driverId: point.driverId,
-                driverName: point.driverName,
-                carNumber: point.carNumber,
-                position: point.position,
-                points: point.points,
-                totalPoints: point.points
-              }))
-              .sort((a, b) => {
-                // Trier par points décroissants, puis par position croissante
-                if (a.points !== b.points) {
-                  return b.points - a.points;
-                }
-                return a.position - b.position;
-              })
-            }
-            showTotal={false}
-            color="#28a745"
-          />
+          {(selectedStandingView === 'all' || selectedStandingView === 'timetrials') && (
+            <StandingDisplay 
+              title="⏱️ Essais Chronométrés"
+              standings={timeTrialsPoints
+                .map(point => ({
+                  driverId: point.driverId,
+                  driverName: point.driverName,
+                  carNumber: point.carNumber,
+                  position: point.position,
+                  points: point.points,
+                  totalPoints: point.points
+                }))
+                .sort((a, b) => {
+                  if (a.points !== b.points) {
+                    return b.points - a.points;
+                  }
+                  return a.position - b.position;
+                })
+              }
+              showTotal={false}
+              color="#28a745"
+            />
+          )}
 
           {/* Classements Intermédiaires */}
-          {qualifyingRaces.map((race, index) => (
+          {selectedStandingView === 'all' && qualifyingRaces.map((race, index) => (
             <StandingDisplay 
               key={race.id}
               title={`📈 Intermédiaire ${index + 1} (après ${race.name})`}
@@ -678,11 +709,24 @@ export default function MeetingStandingsManagement() {
             />
           ))}
 
+          {/* Classement intermédiaire spécifique sélectionné */}
+          {selectedStandingView.startsWith('intermediate-') && (
+            <StandingDisplay 
+              title={`📈 Classement après ${parseInt(selectedStandingView.split('-')[1]) + 1} manche(s)`}
+              standings={calculateIntermediateStandings(parseInt(selectedStandingView.split('-')[1]))}
+              showTotal={true}
+              color="#667eea"
+              showBreakdown={true}
+              qualifyingRaces={qualifyingRaces.slice(0, parseInt(selectedStandingView.split('-')[1]) + 1)}
+            />
+          )}
+
+
           {/* Classement Final */}
-          {qualifyingRaces.length > 0 && (
+          {(selectedStandingView === 'all' || selectedStandingView === 'final') && qualifyingRaces.length > 0 && (
             <>
               <StandingDisplay 
-                title="🏅 Classement Final Meeting"
+                title="🏅 Classement Intermédiaire"
                 standings={calculateFinalStandings()}
                 showTotal={true}
                 color="#8e24aa"
@@ -692,15 +736,17 @@ export default function MeetingStandingsManagement() {
               />
 
               {/* Bouton sauvegarde points finaux */}
-              <div className="action-buttons-container">
-                <button
-                  onClick={saveIntermedaireMeetingPoints}
-                  className="action-btn action-btn-primary"
-                >
-                  <span>💾</span>
-                  Sauvegarder Points Finaux Meeting
-                </button>
-              </div>
+              {selectedStandingView === 'all' && (
+                <div className="action-buttons-container">
+                  <button
+                    onClick={saveIntermedaireMeetingPoints}
+                    className="action-btn action-btn-primary"
+                  >
+                    <span>💾</span>
+                    Sauvegarder Points Intermédiaire
+                  </button>
+                </div>
+              )}
 
               {/* Affichage des points finaux sauvegardés */}
               {finalMeetingPoints.length > 0 && (
@@ -717,7 +763,7 @@ export default function MeetingStandingsManagement() {
 
                   <h3 className="points-table-header">
                     <span style={{ fontSize: '1.8rem' }}>✅</span>
-                    Points Finaux Sauvegardés - {selectedCategory}
+                    Points Intermédaire - {selectedCategory}
                     <span className="points-table-badge" style={{ background: '#28a745' }}>
                       SAUVEGARDÉS
                     </span>
@@ -774,7 +820,7 @@ export default function MeetingStandingsManagement() {
           )}
 
           {/* RÉCAPITULATIF POINTS DEMI-FINALES */}
-          {semifinalPoints.length > 0 && (
+          {(selectedStandingView === 'all' || selectedStandingView === 'semifinal-recap') && semifinalPoints.length > 0 && (
             <div className="points-table-container points-table-semifinal">
               <h3 className="points-table-header">
                 <span style={{ fontSize: '1.8rem' }}>🥈</span>
@@ -836,7 +882,7 @@ export default function MeetingStandingsManagement() {
           )}
 
           {/* RÉCAPITULATIF POINTS FINALE */}
-          {finalPoints.length > 0 && (
+          {(selectedStandingView === 'all' || selectedStandingView === 'final-recap') && finalPoints.length > 0 && (
             <div className="points-table-container points-table-final">
               <h3 className="points-table-header">
                 <span style={{ fontSize: '1.8rem' }}>🏆</span>
@@ -895,128 +941,132 @@ export default function MeetingStandingsManagement() {
           )}
 
           {/* BOUTON GÉNÉRATION POINTS CHAMPIONNAT */}
-          {engagedDrivers.length > 0 && (
-            <div className="action-buttons-container">
-              <button
-                onClick={saveChampionshipMeetingPoints}
-                className="action-btn action-btn-secondary"
-              >
-                <span>🏆</span>
-                Générer Points Championnat Meeting
-              </button>
-              
-              <div className="action-btn-info">
-                Combine qualifications + demi-finales + finale pour le championnat
-                <br />
-                <strong>Inclut TOUS les {engagedDrivers.length} pilotes engagés au meeting</strong>
-              </div>
-            </div>
-          )}
+          {(selectedStandingView === 'all' || selectedStandingView === 'championship') && (
+            <>
+              {selectedStandingView === 'all' && engagedDrivers.length > 0 && (
+                <div className="action-buttons-container">
+                  <button
+                    onClick={saveChampionshipMeetingPoints}
+                    className="action-btn action-btn-secondary"
+                  >
+                    <span>🏆</span>
+                    Classement du meeting
+                  </button>
+                  <div className="action-btn-info">
+                    Combine qualifications + demi-finales + finale pour le championnat
+                    <br />
+                    <strong>Inclut TOUS les {engagedDrivers.length} pilotes engagés au meeting</strong>
+                  </div>
+                </div>
+              )}
 
-          {/* RÉCAPITULATIF FINAL CHAMPIONNAT */}
-          {championshipMeetingPoints.length > 0 && (
-            <div className="points-table-container" style={{ border: '3px solid #e74c3c' }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '4px',
-                background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
-                borderRadius: '20px 20px 0 0'
-              }} />
-              
-              <h3 className="points-table-header">
-                <span style={{ fontSize: '1.8rem' }}>🏆</span>
-                POINTS CHAMPIONNAT - {selectedCategory}
-                <span style={{ 
-                  fontSize: '0.8rem', 
-                  background: '#e74c3c', 
-                  color: 'white', 
-                  padding: '0.25rem 0.5rem', 
-                  borderRadius: '12px' 
-                }}>
-                  MEETING {selectedMeetingData?.name}
-                </span>
-              </h3>
-              
-              <table className="points-table-modern">
-                <thead>
-                  <tr>
-                    <th>Pos.</th>
-                    <th>Pilote</th>
-                    <th>Pts Intermédiaires</th>
-                    <th>Pts Demi</th>
-                    <th>Pts Finale</th>
-                    <th style={{ background: '#c0392b' }}>TOTAL MEETING</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {championshipMeetingPoints
-                    .sort((a, b) => b.totalMeetingPoints - a.totalMeetingPoints)
-                    .map((point, index) => (
-                      <tr key={point.id} className={
-                        index === 0 ? 'podium-1' : 
-                        index === 1 ? 'podium-2' : 
-                        index === 2 ? 'podium-3' : ''
-                      }>
-                        <td>
-                          <span className={`position-cell ${
-                            index === 0 ? 'position-1' : 
-                            index === 1 ? 'position-2' : 
-                            index === 2 ? 'position-3' : 'position-other'
-                          }`} style={{ fontSize: '1.3rem' }}>
-                            {index + 1}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="driver-info">
-                            <span className="driver-number">
-                              #{point.carNumber}
-                            </span>
-                            <span className="driver-name">
-                              {point.driverName}
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className={`points-cell ${point.qualifyingPoints > 0 ? 'points-positive' : 'points-zero'}`}>
-                            {point.qualifyingPoints > 0 ? point.qualifyingPoints : '-'}
-                          </span>
-                        </td>
-                        <td>
-                          <span className={`points-cell ${point.semifinalPoints > 0 ? 'points-positive' : 'points-zero'}`}>
-                            {point.semifinalPoints > 0 ? point.semifinalPoints : '-'}
-                          </span>
-                        </td>
-                        <td>
-                          <span className={`points-cell ${point.finalPoints > 0 ? 'points-positive' : 'points-zero'}`}>
-                            {point.finalPoints > 0 ? point.finalPoints : '-'}
-                          </span>
-                        </td>
-                        <td style={{ 
-                          background: index < 3 ? 'rgba(231, 76, 60, 0.1)' : 'transparent'
-                        }}>
-                          <span className="points-cell" style={{ 
-                            fontSize: '1.4rem',
-                            fontWeight: '800',
-                            color: index < 3 ? '#e74c3c' : '#333'
-                          }}>
-                            {point.totalMeetingPoints}
-                          </span>
-                        </td>
+              {/* RÉCAPITULATIF FINAL CHAMPIONNAT */}
+              {championshipMeetingPoints.length > 0 && (
+                <div className="points-table-container" style={{ border: '3px solid #e74c3c' }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+                    borderRadius: '20px 20px 0 0'
+                  }} />
+                  
+                  <h3 className="points-table-header">
+                    <span style={{ fontSize: '1.8rem' }}>🏆</span>
+                    POINTS MEETING - {selectedCategory}
+                    <span style={{ 
+                      fontSize: '0.8rem', 
+                      background: '#e74c3c', 
+                      color: 'white', 
+                      padding: '0.25rem 0.5rem', 
+                      borderRadius: '12px' 
+                    }}>
+                      MEETING {selectedMeetingData?.name}
+                    </span>
+                  </h3>
+                  
+                  <table className="points-table-modern">
+                    <thead>
+                      <tr>
+                        <th>Pos.</th>
+                        <th>Pilote</th>
+                        <th>Pts Intermédiaires</th>
+                        <th>Pts Demi</th>
+                        <th>Pts Finale</th>
+                        <th style={{ background: '#c0392b' }}>TOTAL MEETING</th>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      {championshipMeetingPoints
+                        .sort((a, b) => b.totalMeetingPoints - a.totalMeetingPoints)
+                        .map((point, index) => (
+                          <tr key={point.id} className={
+                            index === 0 ? 'podium-1' : 
+                            index === 1 ? 'podium-2' : 
+                            index === 2 ? 'podium-3' : ''
+                          }>
+                            <td>
+                              <span className={`position-cell ${
+                                index === 0 ? 'position-1' : 
+                                index === 1 ? 'position-2' : 
+                                index === 2 ? 'position-3' : 'position-other'
+                              }`} style={{ fontSize: '1.3rem' }}>
+                                {index + 1}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="driver-info">
+                                <span className="driver-number">
+                                  #{point.carNumber}
+                                </span>
+                                <span className="driver-name">
+                                  {point.driverName}
+                                </span>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`points-cell ${point.qualifyingPoints > 0 ? 'points-positive' : 'points-zero'}`}>
+                                {point.qualifyingPoints > 0 ? point.qualifyingPoints : '-'}
+                              </span>
+                            </td>
+                            <td>
+                              <span className={`points-cell ${point.semifinalPoints > 0 ? 'points-positive' : 'points-zero'}`}>
+                                {point.semifinalPoints > 0 ? point.semifinalPoints : '-'}
+                              </span>
+                            </td>
+                            <td>
+                              <span className={`points-cell ${point.finalPoints > 0 ? 'points-positive' : 'points-zero'}`}>
+                                {point.finalPoints > 0 ? point.finalPoints : '-'}
+                              </span>
+                            </td>
+                            <td style={{ 
+                              background: index < 3 ? 'rgba(231, 76, 60, 0.1)' : 'transparent'
+                            }}>
+                              <span className="points-cell" style={{ 
+                                fontSize: '1.4rem',
+                                fontWeight: '800',
+                                color: index < 3 ? '#e74c3c' : '#333'
+                              }}>
+                                {point.totalMeetingPoints}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
 
-              <div className="table-info-footer">
-                💡 Ces points seront utilisés pour le classement général du championnat
-                <br />
-                <small>Points intermédiaires = classement qualifications • Points demi/finale = bonus phases finales</small>
-              </div>
-            </div>
+                  <div className="table-info-footer">
+                    💡 Ces points seront utilisés pour le classement général du championnat
+                    <br />
+                    <small>Points meeting = classement intermédiaire • Points demi/finale = bonus phases finales</small>
+                  </div>
+                </div>
+              )}
+            </>
           )}
+          
 
         </div>
       )}
