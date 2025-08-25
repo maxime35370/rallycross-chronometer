@@ -137,16 +137,17 @@ const handleDelete = async (driverId: string) => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
-        👥 Gestion des Pilotes
-      </h2>
-      <div className="filter-section">
-        <h3 className="filter-title">
-          <span>🏎️</span>
-          Filtres Pilotes
-        </h3>
-        
-        <div className="filter-grid">
+      {/* HEADER PILOTES MODERNE */}
+      <div className="page-header page-header-drivers">
+        <h2 className="page-title">
+          <span className="page-title-icon">👥</span>
+          Gestion des Pilotes
+        </h2>
+      </div>
+
+      {/* FILTRES HARMONISÉS */}
+      <div className="filters-section">
+        <div className="filters-grid">
           <div className="filter-group">
             <label className="filter-label">
               <span>🏆</span>
@@ -155,7 +156,7 @@ const handleDelete = async (driverId: string) => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="modern-select"
+              className="select-modern"
             >
               {CATEGORIES.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -171,137 +172,147 @@ const handleDelete = async (driverId: string) => {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="modern-select"
+              className="select-modern"
             >
-              <option value={2024}>2024</option>
-              <option value={2025}>2025</option>
-              <option value={2026}>2026</option>
+              <option value={2024}>🏁 2024</option>
+              <option value={2025}>🏁 2025</option>
+              <option value={2026}>🏁 2026</option>
             </select>
+          </div>
+
+          <div className="stat-item-modern">
+            <div className="stat-number stat-number-primary">
+              {drivers.length}
+            </div>
+            <div className="stat-label">
+              Pilote(s) {selectedCategory}
+            </div>
           </div>
         </div>
       </div>
-        
 
-      {/* Bouton d'ajout */}
+      {/* Bouton d'ajout modernisé */}
       <button
         onClick={() => setShowForm(!showForm)}
-        className={showForm ? 'cancel-btn' : 'modern-btn'}
-        style={{ marginBottom: '2rem' }}
+        className={`action-btn ${showForm ? 'action-btn-cancel' : 'action-btn-primary'}`}
+        style={{ marginBottom: showForm ? '2rem' : '3rem' }} // ✨ Style conditionnel
       >
-        <span>{showForm ? '❌' : '➕'}</span>
+        <span className="btn-icon">
+          {showForm ? '❌' : '➕'}
+        </span>
         {showForm ? 'Annuler' : 'Ajouter un pilote'}
       </button>
 
       {/* Formulaire d'ajout */}
       {showForm && (
-        <div className="modern-form">
-          <h3 className="form-title">
-            <span>🏎️</span>
-            Nouveau Pilote
-          </h3>
-          
-          <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="form-group">
-                <label className="form-label required">
-                  <span>👤</span>
-                  Nom du pilote
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newDriver.name}
-                  onChange={(e) => setNewDriver({...newDriver, name: e.target.value})}
-                  placeholder="ex: Jean Dupont"
-                  className="modern-input"
-                />
+          <div className="modern-form">
+            <h3 className="form-title">
+              <span>🏎️</span>
+              Nouveau Pilote
+            </h3>
+            
+            <form onSubmit={handleSubmit}>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label className="form-label required">
+                    <span>👤</span>
+                    Nom du pilote
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newDriver.name}
+                    onChange={(e) => setNewDriver({...newDriver, name: e.target.value})}
+                    placeholder="ex: Jean Dupont"
+                    className="modern-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label required">
+                    <span>🔢</span>
+                    Numéro de voiture
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    max="999"
+                    value={newDriver.carNumber}
+                    onChange={(e) => setNewDriver({...newDriver, carNumber: e.target.value})}
+                    placeholder="ex: 23"
+                    className="modern-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label required">
+                    <span>🏆</span>
+                    Catégorie
+                  </label>
+                  <select
+                    required
+                    value={newDriver.category}
+                    onChange={(e) => setNewDriver({...newDriver, category: e.target.value})}
+                    className="modern-select"
+                  >
+                    {CATEGORIES.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">
+                    <span>🏁</span>
+                    Équipe
+                  </label>
+                  <input
+                    type="text"
+                    value={newDriver.team}
+                    onChange={(e) => setNewDriver({...newDriver, team: e.target.value})}
+                    placeholder="ex: Team Racing Pro"
+                    className="modern-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label required">
+                    <span>📅</span>
+                    Saison
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="2020"
+                    max="2030"
+                    value={newDriver.year}
+                    onChange={(e) => setNewDriver({...newDriver, year: parseInt(e.target.value)})}
+                    className="modern-input"
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label required">
-                  <span>🔢</span>
-                  Numéro de voiture
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  max="999"
-                  value={newDriver.carNumber}
-                  onChange={(e) => setNewDriver({...newDriver, carNumber: e.target.value})}
-                  placeholder="ex: 23"
-                  className="modern-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label required">
-                  <span>🏆</span>
-                  Catégorie
-                </label>
-                <select
-                  required
-                  value={newDriver.category}
-                  onChange={(e) => setNewDriver({...newDriver, category: e.target.value})}
-                  className="modern-select"
+              <div className="form-actions">
+                <button 
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="cancel-btn"
                 >
-                  {CATEGORIES.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+                  <span>❌</span>
+                  Annuler
+                </button>
+                
+                <button 
+                  type="submit" 
+                  className="submit-btn"
+                >
+                  <span>💾</span>
+                  {editingDriver ? 'Modifier' : 'Ajouter'}
+                </button>
               </div>
-
-              <div className="form-group">
-                <label className="form-label">
-                  <span>🏁</span>
-                  Équipe
-                </label>
-                <input
-                  type="text"
-                  value={newDriver.team}
-                  onChange={(e) => setNewDriver({...newDriver, team: e.target.value})}
-                  placeholder="ex: Team Racing Pro"
-                  className="modern-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label required">
-                  <span>📅</span>
-                  Saison
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="2020"
-                  max="2030"
-                  value={newDriver.year}
-                  onChange={(e) => setNewDriver({...newDriver, year: parseInt(e.target.value)})}
-                  className="modern-input"
-                />
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button 
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="cancel-btn"
-              >
-                <span>❌</span>
-                Annuler
-              </button>
-              
-              <button 
-                type="submit" 
-                className="submit-btn"
-              >
-                <span>💾</span>
-                {editingDriver ? 'Modifier' : 'Ajouter'}
-              </button>
-            </div>
-          </form>
-        </div>
+            </form>
+          </div>
       )}
 
       {/* Liste des pilotes en cartes */}
