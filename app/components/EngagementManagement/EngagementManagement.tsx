@@ -147,255 +147,287 @@ export default function EngagementManagement() {
   const availableCategories = selectedMeetingData?.categories || [];
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
-        📝 Gestion des Engagements
+  <div style={{ padding: '2rem' }}>
+    {/* HEADER ENGAGEMENTS MODERNE */}
+    <div className="page-header page-header-engagements">
+      <h2 className="page-title">
+        <span className="page-title-icon">📝</span>
+        Gestion des Engagements
       </h2>
 
-      {/* Sélection année */}
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-          📅 Saison :
-        </label>
-        <select
-          value={selectedYear}
-          onChange={(e) => {
-            setSelectedYear(parseInt(e.target.value));
-            setSelectedMeeting('');
-            setSelectedCategory('');
-          }}
-          style={{ 
-            padding: '0.5rem', 
-            borderRadius: '4px', 
-            border: '1px solid #ccc',
-            fontSize: '1rem',
-            color: '#333',
-            backgroundColor: 'white',
-            minWidth: '150px'
-          }}
-        >
-          <option value={2024}>2024</option>
-          <option value={2025}>2025</option>
-          <option value={2026}>2026</option>
-        </select>
-      </div>
-
-      {/* Sélection meeting et catégorie */}
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-              🏁 Meeting :
-            </label>
-            <select
-              value={selectedMeeting}
-              onChange={(e) => {
-                setSelectedMeeting(e.target.value);
-                setSelectedCategory('');
-              }}
-              style={{ 
-                width: '100%',
-                padding: '0.5rem', 
-                borderRadius: '4px', 
-                border: '1px solid #ccc',
-                fontSize: '1rem',
-                color: '#333',
-                backgroundColor: 'white'
-              }}
-            >
-              <option value="">Sélectionnez un meeting</option>
-              {meetings.map(meeting => (
-                <option key={meeting.id} value={meeting.id}>
-                  {meeting.name} - {new Date(meeting.date).toLocaleDateString('fr-FR')}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-              🏆 Catégorie :
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              disabled={!selectedMeeting}
-              style={{ 
-                width: '100%',
-                padding: '0.5rem', 
-                borderRadius: '4px', 
-                border: '1px solid #ccc',
-                fontSize: '1rem',
-                color: '#333',
-                backgroundColor: selectedMeeting ? 'white' : '#f5f5f5'
-              }}
-            >
-              <option value="">Sélectionnez une catégorie</option>
-              {availableCategories.map((category: string) => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
+      {/* FILTRES INTÉGRÉS DANS LE HEADER */}
+      <div className="filter-row">
+        <div className="filter-item">
+          <label className="filter-label-modern">
+            <span>📅</span>
+            Saison :
+          </label>
+          <select
+            value={selectedYear}
+            onChange={(e) => {
+              setSelectedYear(parseInt(e.target.value));
+              setSelectedMeeting('');
+              setSelectedCategory('');
+            }}
+            className="select-modern"
+          >
+            <option value={2024}>🏁 2024</option>
+            <option value={2025}>🏁 2025</option>
+            <option value={2026}>🏁 2026</option>
+          </select>
         </div>
 
+        <div className="filter-item">
+          <label className="filter-label-modern">
+            <span>🏁</span>
+            Meeting :
+          </label>
+          <select
+            value={selectedMeeting}
+            onChange={(e) => {
+              setSelectedMeeting(e.target.value);
+              setSelectedCategory('');
+            }}
+            className="select-modern"
+            style={{ minWidth: '200px' }}
+          >
+            <option value="">Sélectionnez un meeting</option>
+            {meetings.map(meeting => (
+              <option key={meeting.id} value={meeting.id}>
+                {meeting.name} - {new Date(meeting.date).toLocaleDateString('fr-FR')}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-item">
+          <label className="filter-label-modern">
+            <span>🏆</span>
+            Catégorie :
+          </label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            disabled={!selectedMeeting}
+            className="select-modern"
+            style={{ 
+              opacity: selectedMeeting ? 1 : 0.6,
+              cursor: selectedMeeting ? 'pointer' : 'not-allowed'
+            }}
+          >
+            <option value="">Sélectionnez une catégorie</option>
+            {availableCategories.map((category: string) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* STATS À DROITE */}
         {selectedMeeting && selectedCategory && (
-          <div style={{ marginTop: '1rem', padding: '1rem', background: '#28a745', color: 'white', borderRadius: '8px', border: '1px solid #1e7e34' }}>
-  <strong>📋 Contexte :</strong> {selectedMeetingData?.name} • {selectedCategory} {selectedYear}
-  <br />
-  <small style={{ opacity: 0.9 }}>Pilotes éligibles : même année ({selectedYear}) et même catégorie ({selectedCategory})</small>
-</div>
+          <div className="stats-container">
+            <div className="stat-card stat-card-primary">
+              <div className="stat-number stat-number-primary">
+                {drivers.length}
+              </div>
+              <div className="stat-label">Éligibles</div>
+            </div>
+
+            <div className="stat-card stat-card-secondary">
+              <div className="stat-number stat-number-secondary">
+                {engagedDrivers.length}
+              </div>
+              <div className="stat-label">Engagés</div>
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Liste des pilotes à engager */}
+      {/* CONTEXTE INFORMATIF */}
       {selectedMeeting && selectedCategory && (
-        <div style={{ 
-          background: 'white', 
-          borderRadius: '8px', 
-          padding: '1.5rem',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-          marginBottom: '1.5rem'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 style={{ color: '#333', margin: 0 }}>
-              👥 Pilotes {selectedCategory} {selectedYear} ({engagedDrivers.length}/{drivers.length} engagés)
-            </h3>
-            <button
-              onClick={handleSaveEngagements}
-              style={{
-                padding: '0.5rem 1rem',
-                background: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              💾 Sauvegarder
-            </button>
-          </div>
-
-          {drivers.length === 0 ? (
-            <p style={{ color: '#666', textAlign: 'center', padding: '2rem' }}>
-              👤 Aucun pilote trouvé pour {selectedCategory} {selectedYear}
-            </p>
-          ) : (
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-              gap: '0.5rem'
-            }}>
-              {drivers.map(driver => (
-                <div
-                  key={driver.id}
-                  onClick={() => toggleDriverEngagement(driver.id)}
-                  style={{
-                    padding: '0.75rem',
-                    border: '2px solid',
-                    borderColor: engagedDrivers.includes(driver.id) ? '#28a745' : '#ddd',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    backgroundColor: engagedDrivers.includes(driver.id) ? '#d4edda' : 'white',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <span style={{
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    background: engagedDrivers.includes(driver.id) ? '#28a745' : '#ddd',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '12px',
-                    fontWeight: 'bold'
-                  }}>
-                    {engagedDrivers.includes(driver.id) ? '✓' : ''}
-                  </span>
-                  
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '500', color: '#333' }}>
-                      #{driver.carNumber} {driver.name}
-                    </div>
-                    {driver.team && (
-                      <div style={{ fontSize: '0.85rem', color: '#666' }}>
-                        {driver.team}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {drivers.length > 0 && (
-            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
-              <button
-                onClick={() => setEngagedDrivers(drivers.map(d => d.id))}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#667eea',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
-                }}
-              >
-                ✅ Tout sélectionner
-              </button>
-              <button
-                onClick={() => setEngagedDrivers([])}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
-                }}
-              >
-                ❌ Tout désélectionner
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Récapitulatif */}
-      {selectedMeeting && (
-        <div style={{ 
-          background: '#f8f9fa', 
-          padding: '1rem', 
-          borderRadius: '8px',
-          border: '1px solid #e9ecef'
-        }}>
-          <h4 style={{ color: '#333', marginTop: 0 }}>📊 Récapitulatif du meeting</h4>
-          <p style={{ color: '#666', margin: 0 }}>
-            <strong>{selectedMeetingData?.name}</strong> • {selectedMeetingData?.location} • {selectedMeetingData && new Date(selectedMeetingData.date).toLocaleDateString('fr-FR')}
-          </p>
-          <div style={{ marginTop: '0.5rem' }}>
-            <strong>Catégories :</strong> {availableCategories.join(', ')}
+        <div className="context-info context-success">
+          <strong>📋 Contexte :</strong> {selectedMeetingData?.name} • {selectedCategory} {selectedYear}
+          <div className="context-info-text">
+            Pilotes éligibles : même année ({selectedYear}) et même catégorie ({selectedCategory})
           </div>
         </div>
       )}
     </div>
-  );
+
+    {/* CONTENU PRINCIPAL */}
+    {selectedMeeting && selectedCategory ? (
+      <div className="content-section">
+        <div style={{ 
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)',
+          backdropFilter: 'blur(12px)',
+          border: '2px solid rgba(40, 167, 69, 0.3)',
+          borderRadius: '20px',
+          padding: '2rem',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.1)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Barre verte en haut */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+            borderRadius: '20px 20px 0 0'
+          }} />
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <h3 style={{ 
+              fontFamily: 'Orbitron, monospace',
+              fontWeight: '700',
+              color: '#1a1a1a',
+              margin: 0,
+              fontSize: '1.3rem'
+            }}>
+              👥 Pilotes {selectedCategory} {selectedYear} ({engagedDrivers.length}/{drivers.length} engagés)
+            </h3>
+            
+            <button
+              onClick={handleSaveEngagements}
+              className="action-btn action-btn-secondary"
+              style={{ marginBottom: 0 }}
+            >
+              <span className="btn-icon">💾</span>
+              Sauvegarder
+            </button>
+          </div>
+
+          {drivers.length === 0 ? (
+            <div className="empty-state">
+              <span className="empty-state-icon">👤</span>
+              <div className="empty-state-title">Aucun pilote trouvé</div>
+              <div className="empty-state-text">
+                Aucun pilote disponible pour {selectedCategory} {selectedYear}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                gap: '1rem',
+                marginBottom: '2rem'
+              }}>
+                {drivers.map(driver => (
+                  <div
+                    key={driver.id}
+                    onClick={() => toggleDriverEngagement(driver.id)}
+                    style={{
+                      padding: '1rem',
+                      border: '2px solid',
+                      borderColor: engagedDrivers.includes(driver.id) ? '#28a745' : 'rgba(0,0,0,0.1)',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      backgroundColor: engagedDrivers.includes(driver.id) ? 'rgba(40, 167, 69, 0.1)' : 'white',
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      boxShadow: engagedDrivers.includes(driver.id) ? '0 4px 15px rgba(40, 167, 69, 0.2)' : '0 2px 8px rgba(0,0,0,0.05)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!engagedDrivers.includes(driver.id)) {
+                        e.currentTarget.style.borderColor = '#28a745';
+                        e.currentTarget.style.backgroundColor = 'rgba(40, 167, 69, 0.05)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!engagedDrivers.includes(driver.id)) {
+                        e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)';
+                        e.currentTarget.style.backgroundColor = 'white';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
+                  >
+                    <span style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: engagedDrivers.includes(driver.id) ? '#28a745' : '#ddd',
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      flexShrink: 0
+                    }}>
+                      {engagedDrivers.includes(driver.id) ? '✓' : ''}
+                    </span>
+                    
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', color: '#333', fontSize: '1.1rem' }}>
+                        #{driver.carNumber} {driver.name}
+                      </div>
+                      {driver.team && (
+                        <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.25rem' }}>
+                          🏁 {driver.team}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Boutons rapides */}
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <button
+                  onClick={() => setEngagedDrivers(drivers.map(d => d.id))}
+                  className="action-btn action-btn-secondary"
+                  style={{ marginBottom: 0, fontSize: '0.9rem', padding: '0.8rem 1.5rem' }}
+                >
+                  <span>✅</span>
+                  Tout sélectionner
+                </button>
+                <button
+                  onClick={() => setEngagedDrivers([])}
+                  className="action-btn action-btn-cancel"
+                  style={{ marginBottom: 0, fontSize: '0.9rem', padding: '0.8rem 1.5rem' }}
+                >
+                  <span>❌</span>
+                  Tout désélectionner
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    ) : (
+      <div className="empty-state">
+        <span className="empty-state-icon">📝</span>
+        <div className="empty-state-title">Sélectionnez un meeting et une catégorie</div>
+        <div className="empty-state-text">
+          Choisissez d'abord un meeting et une catégorie pour gérer les engagements
+        </div>
+      </div>
+    )}
+
+    {/* Récapitulatif en bas - reste identique */}
+    {selectedMeeting && (
+      <div style={{ 
+        background: 'rgba(248, 249, 250, 0.9)',
+        backdropFilter: 'blur(8px)',
+        padding: '1.5rem', 
+        borderRadius: '16px',
+        border: '1px solid rgba(0,0,0,0.1)',
+        marginTop: '2rem'
+      }}>
+        <h4 style={{ color: '#333', marginTop: 0, marginBottom: '1rem' }}>📊 Récapitulatif du meeting</h4>
+        <p style={{ color: '#666', margin: 0, marginBottom: '0.5rem' }}>
+          <strong>{selectedMeetingData?.name}</strong> • {selectedMeetingData?.location} • {selectedMeetingData && new Date(selectedMeetingData.date).toLocaleDateString('fr-FR')}
+        </p>
+        <div>
+          <strong>Catégories :</strong> {availableCategories.join(', ')}
+        </div>
+      </div>
+    )}
+  </div>
+);
 }
