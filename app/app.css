@@ -1130,3 +1130,25 @@ body {
     font-size: 1rem;
   }
 }
+
+/* Couleurs spécifiques pour les types de sessions */
+:root {
+  --session-timetrials: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  --session-qualifying: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --session-semifinal: linear-gradient(135deg, #8e24aa 0%, #7b1fa2 100%);
+  --session-final: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+}
+
+/* Sessions responsive */
+@media (max-width: 768px) {
+  .stats-container {
+    flex-direction: column;
+    margin-left: 0;
+    gap: 1rem;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
