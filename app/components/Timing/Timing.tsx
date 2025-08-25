@@ -1744,121 +1744,113 @@ const SemifinalPointsDisplay: React.FC<SemifinalPointsDisplayProps> = ({
 
   if (points.length === 0) {
     return (
-      <div style={{ 
-        background: '#f8f9fa', 
-        borderRadius: '8px', 
-        padding: '2rem',
-        textAlign: 'center', 
-        color: '#666' 
-      }}>
-        📊 Aucun point attribué pour cette demi-finale
+      <div className="empty-state">
+        <span className="empty-state-icon">📊</span>
+        <div className="empty-state-title">Aucun point attribué</div>
+        <div className="empty-state-text">
+          Aucun point attribué pour cette demi-finale
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ 
-      background: 'white', 
-      borderRadius: '8px', 
-      padding: '1.5rem',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      border: '2px solid #8e24aa'
-    }}>
-      <h3 style={{ 
-        color: '#8e24aa', 
-        marginTop: 0, 
-        marginBottom: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}>
-        🥈 Points {raceName} - {category}
-        <span style={{ 
-          fontSize: '0.8rem', 
-          background: '#8e24aa', 
-          color: 'white', 
-          padding: '0.25rem 0.5rem', 
-          borderRadius: '12px' 
-        }}>
+    <div className="points-table-container points-table-semifinal">
+      <h3 className="points-table-header">
+        <span style={{ fontSize: '1.8rem' }}>🥈</span>
+        Points {raceName} - {category}
+        <span className="points-table-badge">
           🔄 Temps réel
         </span>
       </h3>
       
       <div style={{ 
-        marginBottom: '1rem', 
+        marginBottom: '1.5rem', 
         fontSize: '0.9rem', 
         color: '#666',
-        background: '#f8f9fa',
-        padding: '0.75rem',
-        borderRadius: '4px'
+        background: 'rgba(248, 249, 250, 0.8)',
+        backdrop: 'blur(8px)',
+        padding: '1rem',
+        borderRadius: '8px',
+        border: '1px solid rgba(0,0,0,0.05)'
       }}>
-        📊 Barème : 1er=10pts • 2ème=8pts • 3ème=6pts • 4ème=5pts • 5ème=4pts • 6ème=3pts • 7ème=2pts • 8ème=1pt
-        <br />
-        ⚖️ Non partant = classé après + 0pt
+        <div style={{ marginBottom: '0.5rem' }}>
+          📊 <strong>Barème :</strong> 1er=10pts • 2ème=8pts • 3ème=6pts • 4ème=5pts • 5ème=4pts • 6ème=3pts • 7ème=2pts • 8ème=1pt
+        </div>
+        <div>
+          ⚖️ <strong>Règles :</strong> Non partant = classé après + 0pt
+        </div>
       </div>
       
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#8e24aa', color: 'white' }}>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pos.</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Temps</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Statut</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.filter(point => selectedRace?.drivers?.includes(point.driverId)).map((point, index) => (
-              <tr key={point.id} style={{ 
-                borderBottom: '1px solid #ddd',
-                backgroundColor: point.points > 0 ? '#faf0ff' : '#fff5f5'
-              }}>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  color: point.status === 'finished' && index < 3 
-                    ? (index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : '#cd7f32') 
-                    : '#333'
-                }}>
+      <table className="points-table-modern">
+        <thead>
+          <tr>
+            <th>Pos.</th>
+            <th>Pilote</th>
+            <th>Temps</th>
+            <th>Statut</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.filter(point => selectedRace?.drivers?.includes(point.driverId)).map((point, index) => (
+            <tr key={point.id} className={
+              point.status === 'finished' && index < 3 ?
+                (index === 0 ? 'podium-1' : index === 1 ? 'podium-2' : 'podium-3') : 
+                point.points === 0 ? 'no-points' : ''
+            }>
+              <td>
+                <span className={`position-cell ${
+                  point.status === 'finished' && index < 3 ? 
+                    (index === 0 ? 'position-1' : index === 1 ? 'position-2' : 'position-3') : 
+                    'position-other'
+                }`}>
                   {point.position}
-                </td>
-                <td style={{ padding: '0.75rem' }}>
-                  <div style={{ fontWeight: '500', color: '#333' }}>
-                    #{point.carNumber} {point.driverName}
-                  </div>
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontFamily: 'monospace',
-                  fontSize: '1rem',
-                  color: '#1e3c72'
-                }}>
+                </span>
+              </td>
+              <td>
+                <div className="driver-info">
+                  <span className="driver-number">
+                    #{point.carNumber}
+                  </span>
+                  <span className="driver-name">
+                    {point.driverName}
+                  </span>
+                </div>
+              </td>
+              <td>
+                <span className="time-cell">
                   {formatTime(point.totalTime || 0)}
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  color: point.status === 'finished' ? '#28a745' : '#dc3545',
-                  fontWeight: '500'
+                </span>
+              </td>
+              <td>
+                <span style={{
+                  background: point.status === 'finished' ? 'linear-gradient(135deg, #28a745, #20c997)' : 'linear-gradient(135deg, #6c757d, #5a6268)',
+                  color: 'white',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
-                  {point.status === 'finished' ? 'Terminé' : 'Non partant'}
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  fontSize: '1.2rem',
-                  color: point.points > 0 ? '#8e24aa' : '#dc3545'
-                }}>
+                  {point.status === 'finished' ? '✅ Terminé' : '❌ Non partant'}
+                </span>
+              </td>
+              <td>
+                <span className={`points-cell ${point.points > 0 ? 'points-positive' : 'points-zero'}`}>
                   {point.points > 0 ? `${point.points} pts` : '0 pt'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div className="table-info-footer">
+        🥈 <strong>Points demi-finale :</strong> Maximum 8 pilotes par demi-finale
+        <br />
+        <small style={{ color: '#8e24aa' }}>⚡ Les 4 premiers de chaque demi-finale accèdent à la finale</small>
       </div>
     </div>
   );
@@ -1923,121 +1915,113 @@ const FinalPointsDisplay: React.FC<FinalPointsDisplayProps> = ({
 
   if (points.length === 0) {
     return (
-      <div style={{ 
-        background: '#f8f9fa', 
-        borderRadius: '8px', 
-        padding: '2rem',
-        textAlign: 'center', 
-        color: '#666' 
-      }}>
-        📊 Aucun point attribué pour cette finale
+      <div className="empty-state">
+        <span className="empty-state-icon">📊</span>
+        <div className="empty-state-title">Aucun point attribué</div>
+        <div className="empty-state-text">
+          Aucun point attribué pour cette finale
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ 
-      background: 'white', 
-      borderRadius: '8px', 
-      padding: '1.5rem',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      border: '2px solid #ffd700'
-    }}>
-      <h3 style={{ 
-        color: '#ffd700', 
-        marginTop: 0, 
-        marginBottom: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}>
-        🏆 Points {raceName} - {category}
-        <span style={{ 
-          fontSize: '0.8rem', 
-          background: '#ffd700', 
-          color: 'black', 
-          padding: '0.25rem 0.5rem', 
-          borderRadius: '12px' 
-        }}>
+    <div className="points-table-container points-table-final">
+      <h3 className="points-table-header">
+        <span style={{ fontSize: '1.8rem' }}>🏆</span>
+        Points {raceName} - {category}
+        <span className="points-table-badge">
           🔄 Temps réel
         </span>
       </h3>
       
       <div style={{ 
-        marginBottom: '1rem', 
+        marginBottom: '1.5rem', 
         fontSize: '0.9rem', 
         color: '#666',
-        background: '#f8f9fa',
-        padding: '0.75rem',
-        borderRadius: '4px'
+        background: 'rgba(248, 249, 250, 0.8)',
+        backdrop: 'blur(8px)',
+        padding: '1rem',
+        borderRadius: '8px',
+        border: '1px solid rgba(0,0,0,0.05)'
       }}>
-        📊 Barème : 1er=15pts • 2ème=12pts • 3ème=10pts • 4ème=8pts • 5ème=6pts • 6ème=5pts • 7ème=4pts • 8ème=3pts
-        <br />
-        ⚖️ Non partant = classé après + 0pt
+        <div style={{ marginBottom: '0.5rem' }}>
+          📊 <strong>Barème :</strong> 1er=15pts • 2ème=12pts • 3ème=10pts • 4ème=8pts • 5ème=6pts • 6ème=5pts • 7ème=4pts • 8ème=3pts
+        </div>
+        <div>
+          🏆 <strong>Finale :</strong> Les 8 meilleurs pilotes des demi-finales • Maximum de points possible
+        </div>
       </div>
       
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#ffd700', color: 'black' }}>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pos.</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Temps</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Statut</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.filter(point => selectedRace?.drivers?.includes(point.driverId)).map((point, index) => (
-              <tr key={point.id} style={{ 
-                borderBottom: '1px solid #ddd',
-                backgroundColor: point.points > 0 ? '#fffbf0' : '#fff5f5'
-              }}>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  color: point.status === 'finished' && index < 3 
-    ? (index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#333')
-    : '#333'
-                }}>
+      <table className="points-table-modern">
+        <thead>
+          <tr>
+            <th>Pos.</th>
+            <th>Pilote</th>
+            <th>Temps</th>
+            <th>Statut</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.filter(point => selectedRace?.drivers?.includes(point.driverId)).map((point, index) => (
+            <tr key={point.id} className={
+              point.status === 'finished' && index < 3 ?
+                (index === 0 ? 'podium-1' : index === 1 ? 'podium-2' : 'podium-3') : 
+                point.points === 0 ? 'no-points' : ''
+            }>
+              <td>
+                <span className={`position-cell ${
+                  point.status === 'finished' && index < 3 ? 
+                    (index === 0 ? 'position-1' : index === 1 ? 'position-2' : 'position-3') : 
+                    'position-other'
+                }`}>
                   {point.position}
-                </td>
-                <td style={{ padding: '0.75rem' }}>
-                  <div style={{ fontWeight: '500', color: '#333' }}>
-                    #{point.carNumber} {point.driverName}
-                  </div>
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontFamily: 'monospace',
-                  fontSize: '1rem',
-                  color: '#1e3c72'
-                }}>
+                </span>
+              </td>
+              <td>
+                <div className="driver-info">
+                  <span className="driver-number">
+                    #{point.carNumber}
+                  </span>
+                  <span className="driver-name">
+                    {point.driverName}
+                  </span>
+                </div>
+              </td>
+              <td>
+                <span className="time-cell">
                   {formatTime(point.totalTime || 0)}
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  color: point.status === 'finished' ? '#28a745' : '#dc3545',
-                  fontWeight: '500'
+                </span>
+              </td>
+              <td>
+                <span style={{
+                  background: point.status === 'finished' ? 'linear-gradient(135deg, #28a745, #20c997)' : 'linear-gradient(135deg, #6c757d, #5a6268)',
+                  color: 'white',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
-                  {point.status === 'finished' ? 'Terminé' : 'Non partant'}
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  fontSize: '1.2rem',
-                  color: point.points > 0 ? '#ffd700' : '#dc3545'
-                }}>
+                  {point.status === 'finished' ? '✅ Terminé' : '❌ Non partant'}
+                </span>
+              </td>
+              <td>
+                <span className={`points-cell ${point.points > 0 ? 'points-positive' : 'points-zero'}`}>
                   {point.points > 0 ? `${point.points} pts` : '0 pt'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div className="table-info-footer">
+        🏆 <strong>Finale officielle :</strong> Course décisive du meeting
+        <br />
+        <small style={{ color: '#FFD700' }}>👑 Le vainqueur remporte 15 points bonus pour le championnat</small>
       </div>
     </div>
   );
