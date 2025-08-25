@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../../config/firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, where, updateDoc, doc, getDocs, deleteDoc } from 'firebase/firestore';
 
+
 // =====================================
 // INTERFACES
 // =====================================
@@ -66,6 +67,7 @@ export default function MeetingStandingsManagement() {
   const [selectedMeeting, setSelectedMeeting] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedStandingView, setSelectedStandingView] = useState<string>('all');
+  const [selectedDriversCount, setSelectedDriversCount] = useState<number>(6);
 
   // Récupérer les meetings
   useEffect(() => {
@@ -531,6 +533,251 @@ export default function MeetingStandingsManagement() {
   const availableCategories = selectedMeetingData?.categories || [];
   const qualifyingRaces = races.filter(race => race.type === 'qualifying');
 
+  // Fonction pour calculer les données du graphique d'évolution
+  const getEvolutionChartData = () => {
+    if (qualifyingRaces.length === 0 || engagedDrivers.length === 0) return [];
+
+    const chartData = [];
+    
+    // Point initial : Essais chronométrés
+    const timeTrialsData: any = {
+      stage: 'Essais',
+      stageIndex: 0
+    };
+    
+    // VÉRIFICATIONS AJOUTÉES
+    if (timeTrialsPoints && timeTrialsPoints.length > 0) {
+      engagedDrivers.forEach(driver => {
+        if (driver && driver.id && driver.name) {
+          const ttPoint = timeTrialsPoints.find(p => p && p.driverId === driver.id);
+          timeTrialsData[driver.name] = ttPoint?.points || 0;
+        }
+      });
+    }
+    chartData.push(timeTrialsData);
+
+    // Points cumulés après chaque manche - VÉRIFICATIONS AJOUTÉES
+    qualifyingRaces.forEach((race, index) => {
+      if (race && race.id) {
+        try {
+          const standings = calculateIntermediateStandings(index);
+          const stageData: any = {
+            stage: `M${index + 1}`,
+            stageIndex: index + 1
+          };
+          
+          if (standings && standings.length > 0) {
+            standings.forEach(pilot => {
+              if (pilot && pilot.driverName && typeof pilot.totalPoints === 'number') {
+                stageData[pilot.driverName] = pilot.totalPoints;
+              }
+            });
+          }
+          
+          chartData.push(stageData);
+        } catch (error) {
+          console.error('Erreur dans calculateIntermediateStandings:', error);
+        }
+      }
+    });
+
+    return chartData;
+  };
+
+  // Fonction pour générer des couleurs pour chaque pilote - CORRIGÉE
+  const getDriverColors = () => {
+    const colors = [
+      '#FF6B35', '#667eea', '#8e24aa', '#28a745', '#ffc107', 
+      '#dc3545', '#17a2b8', '#6c757d', '#fd7e14', '#e83e8c'
+    ];
+    
+    const driverColors: {[key: string]: string} = {};
+    
+    // VÉRIFICATIONS AJOUTÉES
+    if (engagedDrivers && engagedDrivers.length > 0) {
+      engagedDrivers.forEach((driver, index) => {
+        if (driver && driver.name && typeof driver.name === 'string') {
+          driverColors[driver.name] = colors[index % colors.length];
+        }
+      });
+    }
+    
+    return driverColors;
+  };
+
+  const SimpleEvolutionChart = ({ data, driverColors, maxDrivers = 6 }: any) => {
+    // VÉRIFICATIONS AJOUTÉES
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return (
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+          Aucune donnée disponible pour le graphique
+        </div>
+      );
+    }
+    
+    const firstDataPoint = data[0];
+    if (!firstDataPoint || typeof firstDataPoint !== 'object') {
+      return null;
+    }
+    
+    const drivers = Object.keys(firstDataPoint)
+      .filter(k => k !== 'stage' && k !== 'stageIndex')
+      .filter(driver => driver && typeof driver === 'string');
+    
+    if (drivers.length === 0) {
+      return (
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+          Aucun pilote trouvé dans les données
+        </div>
+      );
+    }
+
+    // VARIABLES CORRECTEMENT DÉFINIES DANS LA PORTÉE
+    const width = 800;
+    const height = 300;
+    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+    
+    // Trouver les valeurs max pour l'échelle
+    const allValues = data.flatMap((d: any) => 
+      drivers.map(k => d[k] || 0).filter(val => typeof val === 'number')
+    );
+    const maxPoints = Math.max(...allValues, 0);
+
+    // Calculer le nombre de lignes nécessaires pour la légende
+    const getGridRows = (itemCount: number, itemsPerRow: number = 3) => {
+      return Math.ceil(itemCount / itemsPerRow);
+    };
+
+    
+
+    const finalData = data[data.length - 1];
+    const rankedDrivers = drivers
+      .map(driver => ({
+        name: driver,
+        finalPoints: finalData[driver] || 0
+      }))
+      .sort((a, b) => b.finalPoints - a.finalPoints)
+      .slice(0, maxDrivers)
+      .map(d => d.name);
+
+      console.log('Pilotes sélectionnés:', rankedDrivers); // Pour débugger
+    // Dans le composant SimpleEvolutionChart
+    const legendRows = getGridRows(rankedDrivers.length, 3); // 3 colonnes par défaut
+    const dynamicMarginBottom = Math.max(2, legendRows * 1.5); // 1.5rem par ligne, minimum 2rem  
+
+    return (
+      <div style={{ overflowX: 'auto' }}>
+        <svg width={width} height={height} style={{ background: 'white', borderRadius: '8px' }}>
+          {/* Grille */}
+          <defs>
+            <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#e0e0e0" strokeWidth="1"/>
+            </pattern>
+          </defs>
+          <rect width={chartWidth} height={chartHeight} x={margin.left} y={margin.top} fill="url(#grid)" />
+          
+          {/* Axes */}
+          <line x1={margin.left} y1={margin.top} x2={margin.left} y2={height - margin.bottom} stroke="#666" strokeWidth="2"/>
+          <line x1={margin.left} y1={height - margin.bottom} x2={width - margin.right} y2={height - margin.bottom} stroke="#666" strokeWidth="2"/>
+          
+          {/* Labels X */}
+          {data.map((point: any, index: number) => {
+            if (!point || !point.stage) return null;
+            return (
+              <text
+                key={index}
+                x={margin.left + (index * chartWidth) / Math.max(data.length - 1, 1)}
+                y={height - margin.bottom + 20}
+                textAnchor="middle"
+                fontSize="12"
+                fill="#666"
+              >
+                {point.stage}
+              </text>
+            );
+          })}
+          
+          {/* Lignes pour chaque pilote */}
+          {rankedDrivers.map((driver: string) => {
+            if (!driverColors || !driver) return null;
+            
+            const color = driverColors[driver] || '#333';
+            const points = data.map((d: any, index: number) => {
+              const value = d[driver] || 0;
+              return {
+                x: margin.left + (index * chartWidth) / Math.max(data.length - 1, 1),
+                y: maxPoints > 0 ? 
+                  margin.top + chartHeight - ((value * chartHeight) / maxPoints) : 
+                  margin.top + chartHeight / 2
+              };
+            });
+            
+            const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+            
+            return (
+              <g key={driver}>
+                <path d={pathData} fill="none" stroke={color} strokeWidth="3"/>
+                {points.map((point, i) => (
+                  <circle key={i} cx={point.x} cy={point.y} r="4" fill={color}/>
+                ))}
+              </g>
+            );
+          })}
+          
+          {/* Légende simple */}
+          <text x={margin.left} y={margin.top - 5} fontSize="12" fill="#666" fontWeight="bold">
+            Points
+          </text>
+        </svg>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gap: '0.75rem', 
+          marginTop: '1rem',
+          padding: '1rem',
+          background: 'rgba(248, 249, 250, 0.5)',
+          borderRadius: '8px'
+        }}>
+          {rankedDrivers.map((driver: string, index: number) => {
+            const finalPoints = finalData[driver] || 0;
+            return (
+              <div key={driver} style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                padding: '0.5rem',
+                background: 'white',
+                borderRadius: '6px',
+                border: '1px solid rgba(0,0,0,0.1)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              }}>
+                <div style={{ 
+                  width: '20px', 
+                  height: '4px', 
+                  backgroundColor: (driverColors && driverColors[driver]) || '#333',
+                  borderRadius: '2px',
+                  flexShrink: 0
+                }}></div>
+                <span style={{ 
+                  fontSize: '0.9rem', 
+                  fontWeight: '500',
+                  color: index < 3 ? '#1e3c72' : '#666',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {driver} ({finalPoints} pts)
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+};
   return (
   <div style={{ padding: '2rem' }}>
     {/* HEADER CLASSEMENTS MODERNE */}
@@ -595,10 +842,6 @@ export default function MeetingStandingsManagement() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             disabled={!selectedMeeting}
             className="select-modern"
-            style={{ 
-              opacity: selectedMeeting ? 1 : 0.6,
-              cursor: selectedMeeting ? 'pointer' : 'not-allowed'
-            }}
           >
             <option value="">Sélectionnez une catégorie</option>
             {availableCategories.map((category: string) => (
@@ -607,32 +850,31 @@ export default function MeetingStandingsManagement() {
           </select>
         </div>
 
+        {/* SÉLECTEUR D'AFFICHAGE INTÉGRÉ */}
         {selectedMeeting && selectedCategory && qualifyingRaces.length > 0 && (
-          <div className="filters-section">
-            <div className="filter-item">
-              <label className="filter-label">
-                <span>📈</span>
-                Affichage du classement :
-              </label>
-              <select
-                value={selectedStandingView}
-                onChange={(e) => setSelectedStandingView(e.target.value)}
-                className="select-modern"
-                style={{ minWidth: '300px' }}
-              >
-                <option value="all">🏁 Tous les classements</option>
-                <option value="timetrials">⏱️ Essais chronométrés uniquement</option>
-                {qualifyingRaces.map((race, index) => (
-                  <option key={`intermediate-${index}`} value={`intermediate-${index}`}>
-                    📈 Après {index + 1} manche{index > 0 ? 's' : ''} (cumulé)
-                  </option>
-                ))}
-                <option value="final">🏅 Classement intermédiaire uniquement</option>
-                <option value="semifinal-recap">🥈 Récap demi-finales uniquement</option>
-                <option value="final-recap">🏆 Récap finale uniquement</option>
-                <option value="championship">👑 Points du meeting</option>
-              </select>
-            </div>
+          <div className="filter-item">
+            <label className="filter-label-modern">
+              <span>📈</span>
+              Affichage :
+            </label>
+            <select
+              value={selectedStandingView}
+              onChange={(e) => setSelectedStandingView(e.target.value)}
+              className="select-modern"
+              style={{ minWidth: '250px' }}
+            >
+              <option value="all">🏁 Tous les classements</option>
+              <option value="timetrials">⏱️ Essais chronométrés</option>
+              {qualifyingRaces.map((race, index) => (
+                <option key={`intermediate-${index}`} value={`intermediate-${index}`}>
+                  📈 Après {index + 1} manche{index > 0 ? 's' : ''}
+                </option>
+              ))}
+              <option value="final">🏅 Classement intermédiaire</option>
+              <option value="semifinal-recap">🥈 Récap demi-finales</option>
+              <option value="final-recap">🏆 Récap finale</option>
+              <option value="championship">👑 Points du meeting</option>
+            </select>
           </div>
         )}
 
@@ -734,6 +976,82 @@ export default function MeetingStandingsManagement() {
                 qualifyingRaces={qualifyingRaces}
                 showFinalPoints={true}
               />
+
+              {/* GRAPHIQUE D'ÉVOLUTION DES POINTS */}
+              {selectedMeeting && selectedCategory && qualifyingRaces.length > 0 && (
+                <div 
+                  className="points-table-container" 
+                  style={{ 
+                    marginBottom: '3rem',
+                    paddingBottom: `${Math.max(4, Math.ceil(selectedDriversCount / 4) * 6)}rem` // Ajustement dynamique
+                  }}
+                >
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: '20px 20px 0 0'
+                  }} />
+                  <h3 className="points-table-header">
+                    <span style={{ fontSize: '1.8rem' }}>📈</span>
+                    Évolution des Points - {selectedCategory}
+                    <span className="points-table-badge">
+                      CUMULÉ
+                    </span>
+                  </h3>
+                  {/* SÉLECTEUR NOMBRE DE PILOTES */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    gap: '1rem', 
+                    marginBottom: '1rem',
+                    padding: '1rem',
+                    background: 'rgba(248, 249, 250, 0.8)',
+                    borderRadius: '8px'
+                  }}>
+                    <label style={{ fontWeight: '600', color: '#333' }}>
+                      Nombre de pilotes à afficher :
+                    </label>
+                    <select
+                      value={selectedDriversCount}
+                      onChange={(e) => setSelectedDriversCount(parseInt(e.target.value))}
+                      style={{
+                        padding: '0.5rem',
+                        borderRadius: '6px',
+                        border: '1px solid #ddd',
+                        backgroundColor: 'white',
+                        fontSize: '1rem'
+                      }}
+                    >
+                      <option value={3}>Top 3</option>
+                      <option value={5}>Top 5</option>
+                      <option value={6}>Top 6</option>
+                      <option value={8}>Top 8</option>
+                      <option value={10}>Top 10</option>
+                      <option value={engagedDrivers.length}>Tous ({engagedDrivers.length})</option>
+                    </select>
+                  </div>
+
+                  <div style={{ width: '100%', height: '400px', padding: '1rem 0' }}>
+                    <SimpleEvolutionChart 
+                      data={getEvolutionChartData()} 
+                      driverColors={getDriverColors()}
+                      maxDrivers={selectedDriversCount}
+                    />
+                    <div className="table-info-footer" style={{ marginTop: '2rem' }}>
+                      Évolution des points cumulés après chaque manche qualificative
+                      <br />
+                      <small style={{ color: '#667eea' }}>
+                        Essais = Points essais chronos • M1, M2... = Points cumulés après les manches
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Bouton sauvegarde points finaux */}
               {selectedStandingView === 'all' && (
