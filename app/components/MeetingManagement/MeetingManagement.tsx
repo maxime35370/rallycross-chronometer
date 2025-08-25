@@ -195,50 +195,65 @@ export default function MeetingManagement() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
-        📅 Gestion des Meetings (Week-ends de course)
+  <div style={{ padding: '2rem' }}>
+    {/* EN-TÊTE RALLYCROSS MODERNE */}
+    <div className="section-header">
+      <h2 className="section-title">
+        <span className="section-title-icon">📅</span>
+        Gestion des Meetings
+        <span className="section-subtitle">(Week-ends de course)</span>
       </h2>
 
-      {/* Filtre par année */}
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-          📅 Saison :
-        </label>
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-          style={{ 
-            padding: '0.5rem', 
-            borderRadius: '4px', 
-            border: '1px solid #ccc',
-            fontSize: '1rem',
-            color: '#333',
-            backgroundColor: 'white',
-            minWidth: '150px'
-          }}
-        >
-          <option value={2024}>2024</option>
-          <option value={2025}>2025</option>
-          <option value={2026}>2026</option>
-        </select>
-      </div>
+      <div className="filter-row">
+        <div className="filter-item">
+          <label className="filter-label-modern">
+            <span>📅</span>
+            Saison :
+          </label>
+          
+          <select
+            value={selectedYear}
+            onChange={(e) => {
+              setSelectedYear(parseInt(e.target.value));
+              setSelectedMeeting('');
+              setSelectedCategory('');
+            }}
+            className="select-modern"
+          >
+            <option value={2024}>🏁 2024</option>
+            <option value={2025}>🏁 2025</option>
+            <option value={2026}>🏁 2026</option>
+          </select>
+        </div>
 
-      {/* Bouton création */}
-      <button
-        onClick={() => setShowForm(!showForm)}
-        className={showForm ? 'cancel-btn' : 'modern-btn'}
-        style={{ marginBottom: '2rem' }}
-      >
-        <span>{showForm ? '❌' : '🏁'}</span>
-        {showForm ? 'Annuler' : 'Créer un meeting'}
-      </button>
+        <div className="stats-container">
+          <div className="stat-card stat-card-primary">
+            <div className="stat-number stat-number-primary">
+              {meetings.length}
+            </div>
+            <div className="stat-label">Meeting(s)</div>
+          </div>
+
+          <div className="stat-card stat-card-secondary">
+            <div className="stat-number stat-number-secondary">
+              {meetings.reduce((total, m) => total + (m.categories?.length || 0), 0)}
+            </div>
+            <div className="stat-label">Catégorie(s)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Bouton création modernisé */}
+    <button
+      onClick={() => setShowForm(!showForm)}
+      className={`btn-create-modern ${showForm ? 'btn-create-cancel' : ''}`}
+    >
+      <span className="btn-icon">
+        {showForm ? '❌' : '🏁'}
+      </span>
+      {showForm ? 'Annuler' : 'Créer un meeting'}
+    </button>
 
       {/* Formulaire de création */}
       {showForm && (
