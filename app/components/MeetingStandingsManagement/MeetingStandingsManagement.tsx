@@ -531,123 +531,115 @@ export default function MeetingStandingsManagement() {
   const qualifyingRaces = races.filter(race => race.type === 'qualifying');
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
-        📊 Classements Meeting
+  <div style={{ padding: '2rem' }}>
+    {/* HEADER CLASSEMENTS MODERNE */}
+    <div className="page-header page-header-standings">
+      <h2 className="page-title">
+        <span className="page-title-icon">📊</span>
+        Classements Meeting
       </h2>
 
-      {/* Sélection année */}
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-          📅 Saison :
-        </label>
-        <select
-          value={selectedYear}
-          onChange={(e) => {
-            setSelectedYear(parseInt(e.target.value));
-            setSelectedMeeting('');
-            setSelectedCategory('');
-          }}
-          style={{ 
-            padding: '0.5rem', 
-            borderRadius: '4px', 
-            border: '1px solid #ccc',
-            fontSize: '1rem',
-            color: '#333',
-            backgroundColor: 'white',
-            minWidth: '150px'
-          }}
-        >
-          <option value={2024}>2024</option>
-          <option value={2025}>2025</option>
-          <option value={2026}>2026</option>
-        </select>
-      </div>
-
-      {/* Sélection meeting et catégorie */}
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-              🏁 Meeting :
-            </label>
-            <select
-              value={selectedMeeting}
-              onChange={(e) => {
-                setSelectedMeeting(e.target.value);
-                setSelectedCategory('');
-              }}
-              style={{ 
-                width: '100%',
-                padding: '0.5rem', 
-                borderRadius: '4px', 
-                border: '1px solid #ccc',
-                fontSize: '1rem',
-                color: '#333',
-                backgroundColor: 'white'
-              }}
-            >
-              <option value="">Sélectionnez un meeting</option>
-              {meetings.map(meeting => (
-                <option key={meeting.id} value={meeting.id}>
-                  {meeting.name} - {meeting.date ? new Date(meeting.date).toLocaleDateString('fr-FR') : 'Date non définie'}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-              🏆 Catégorie :
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              disabled={!selectedMeeting}
-              style={{ 
-                width: '100%',
-                padding: '0.5rem', 
-                borderRadius: '4px', 
-                border: '1px solid #ccc',
-                fontSize: '1rem',
-                color: '#333',
-                backgroundColor: selectedMeeting ? 'white' : '#f5f5f5'
-              }}
-            >
-              <option value="">Sélectionnez une catégorie</option>
-              {availableCategories.map((category: string) => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
+      {/* FILTRES INTÉGRÉS DANS LE HEADER */}
+      <div className="filter-row">
+        <div className="filter-item">
+          <label className="filter-label-modern">
+            <span>📅</span>
+            Saison :
+          </label>
+          <select
+            value={selectedYear}
+            onChange={(e) => {
+              setSelectedYear(parseInt(e.target.value));
+              setSelectedMeeting('');
+              setSelectedCategory('');
+            }}
+            className="select-modern"
+          >
+            <option value={2024}>🏁 2024</option>
+            <option value={2025}>🏁 2025</option>
+            <option value={2026}>🏁 2026</option>
+          </select>
         </div>
 
+        <div className="filter-item">
+          <label className="filter-label-modern">
+            <span>🏁</span>
+            Meeting :
+          </label>
+          <select
+            value={selectedMeeting}
+            onChange={(e) => {
+              setSelectedMeeting(e.target.value);
+              setSelectedCategory('');
+            }}
+            className="select-modern"
+            style={{ minWidth: '200px' }}
+          >
+            <option value="">Sélectionnez un meeting</option>
+            {meetings.map(meeting => (
+              <option key={meeting.id} value={meeting.id}>
+                {meeting.name} - {meeting.date ? new Date(meeting.date).toLocaleDateString('fr-FR') : 'Date non définie'}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-item">
+          <label className="filter-label-modern">
+            <span>🏆</span>
+            Catégorie :
+          </label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            disabled={!selectedMeeting}
+            className="select-modern"
+            style={{ 
+              opacity: selectedMeeting ? 1 : 0.6,
+              cursor: selectedMeeting ? 'pointer' : 'not-allowed'
+            }}
+          >
+            <option value="">Sélectionnez une catégorie</option>
+            {availableCategories.map((category: string) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* STATS À DROITE */}
         {selectedMeeting && selectedCategory && (
-          <div style={{ marginTop: '1rem', padding: '1rem', background: '#28a745', color: 'white', borderRadius: '8px' }}>
-            <strong>📋 Contexte :</strong> {selectedMeetingData?.name} • {selectedCategory} {selectedYear}
-            <br />
-            <small style={{ opacity: 0.9 }}>
-              {qualifyingRaces.length} manche(s) qualificative(s) • {engagedDrivers.length} pilote(s) engagé(s) • Mise à jour temps réel
-            </small>
+          <div className="stats-container">
+            <div className="stat-card stat-card-primary">
+              <div className="stat-number stat-number-primary">
+                {qualifyingRaces.length}
+              </div>
+              <div className="stat-label">Manches</div>
+            </div>
+
+            <div className="stat-card stat-card-secondary">
+              <div className="stat-number stat-number-secondary">
+                {engagedDrivers.length}
+              </div>
+              <div className="stat-label">Pilotes</div>
+            </div>
           </div>
         )}
       </div>
 
+      {/* CONTEXTE INFORMATIF */}
+      {selectedMeeting && selectedCategory && qualifyingRaces.length > 0 && (
+        <div className="context-info context-success">
+          <strong>📋 Contexte :</strong> {selectedMeetingData?.name} • {selectedCategory} {selectedYear}
+          <div className="context-info-text">
+            {qualifyingRaces.length} manche(s) qualificative(s) • {engagedDrivers.length} pilote(s) engagé(s) • Mise à jour temps réel
+          </div>
+        </div>
+      )}
+    </div>
+
       {/* Classements */}
       {selectedMeeting && selectedCategory && qualifyingRaces.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div className="content-section">
           
           {/* Essais Chronométrés */}
           <StandingDisplay 
@@ -700,76 +692,81 @@ export default function MeetingStandingsManagement() {
               />
 
               {/* Bouton sauvegarde points finaux */}
-              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+              <div className="action-buttons-container">
                 <button
                   onClick={saveIntermedaireMeetingPoints}
-                  style={{
-                    padding: '1rem 2rem',
-                    background: '#8e24aa',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(142, 36, 170, 0.3)'
-                  }}
+                  className="action-btn action-btn-primary"
                 >
-                  💾 Sauvegarder Points Finaux Meeting
+                  <span>💾</span>
+                  Sauvegarder Points Finaux Meeting
                 </button>
               </div>
 
               {/* Affichage des points finaux sauvegardés */}
               {finalMeetingPoints.length > 0 && (
-                <div style={{ 
-                  background: 'white', 
-                  borderRadius: '8px', 
-                  padding: '1.5rem',
-                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                  border: '2px solid #28a745'
-                }}>
-                  <h3 style={{ color: '#28a745', marginTop: 0, marginBottom: '1rem' }}>
-                    ✅ Points Finaux Sauvegardés - {selectedCategory}
+                <div className="points-table-container" style={{ border: '2px solid #28a745' }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                    borderRadius: '20px 20px 0 0'
+                  }} />
+
+                  <h3 className="points-table-header">
+                    <span style={{ fontSize: '1.8rem' }}>✅</span>
+                    Points Finaux Sauvegardés - {selectedCategory}
+                    <span className="points-table-badge" style={{ background: '#28a745' }}>
+                      SAUVEGARDÉS
+                    </span>
                   </h3>
                   
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ background: '#28a745', color: 'white' }}>
-                          <th style={{ padding: '0.75rem', textAlign: 'center' }}>Position</th>
-                          <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-                          <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points Meeting</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {finalMeetingPoints.map((point) => (
-                          <tr key={point.id} style={{ borderBottom: '1px solid #ddd' }}>
-                            <td style={{ 
-                              padding: '0.75rem', 
-                              textAlign: 'center',
-                              fontWeight: 'bold',
-                              color: point.finalPosition <= 3 ? '#ffd700' : '#333'
-                            }}>
+                  <table className="points-table-modern">
+                    <thead>
+                      <tr>
+                        <th>Position</th>
+                        <th>Pilote</th>
+                        <th>Points Meeting</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {finalMeetingPoints.map((point) => (
+                        <tr key={point.id} className={
+                          point.finalPosition === 1 ? 'podium-1' : 
+                          point.finalPosition === 2 ? 'podium-2' : 
+                          point.finalPosition === 3 ? 'podium-3' : ''
+                        }>
+                          <td>
+                            <span className={`position-cell ${
+                              point.finalPosition <= 3 ? 'position-' + point.finalPosition : 'position-other'
+                            }`}>
                               {point.finalPosition}
-                            </td>
-                            <td style={{ padding: '0.75rem' }}>
-                              <div style={{ fontWeight: '500', color: '#333' }}>
-                                #{point.carNumber} {point.driverName}
-                              </div>
-                            </td>
-                            <td style={{ 
-                              padding: '0.75rem', 
-                              textAlign: 'center',
-                              fontWeight: 'bold',
-                              fontSize: '1.2rem',
-                              color: '#28a745'
-                            }}>
+                            </span>
+                          </td>
+                          <td>
+                            <div className="driver-info">
+                              <span className="driver-number">
+                                #{point.carNumber}
+                              </span>
+                              <span className="driver-name">
+                                {point.driverName}
+                              </span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="points-cell points-positive" style={{ fontSize: '1.3rem' }}>
                               {point.points} pts
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  
+                  <div className="table-info-footer">
+                    ✅ Points finaux du meeting sauvegardés et prêts pour le championnat
                   </div>
                 </div>
               )}
@@ -778,156 +775,137 @@ export default function MeetingStandingsManagement() {
 
           {/* RÉCAPITULATIF POINTS DEMI-FINALES */}
           {semifinalPoints.length > 0 && (
-            <div style={{ 
-              background: 'white', 
-              borderRadius: '8px', 
-              padding: '1.5rem',
-              boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-              border: '2px solid #8e24aa'
-            }}>
-              <h3 style={{ 
-                color: '#8e24aa', 
-                marginTop: 0, 
-                marginBottom: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                🥈 Récapitulatif Points Demi-finales - {selectedCategory}
+            <div className="points-table-container points-table-semifinal">
+              <h3 className="points-table-header">
+                <span style={{ fontSize: '1.8rem' }}>🥈</span>
+                Récapitulatif Points Demi-finales - {selectedCategory}
               </h3>
               
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ background: '#8e24aa', color: 'white' }}>
-                      <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'center' }}>Demi-finale</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'center' }}>Position</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {semifinalPoints
-                      .sort((a, b) => b.points - a.points || a.position - b.position)
-                      .map((point) => (
-                        <tr key={point.id} style={{ borderBottom: '1px solid #ddd' }}>
-                          <td style={{ padding: '0.75rem' }}>
-                            <div style={{ fontWeight: '500', color: '#333' }}>
-                              #{point.carNumber} {point.driverName}
-                            </div>
-                          </td>
-                          <td style={{ padding: '0.75rem', textAlign: 'center', color: '#666' }}>
-                            {point.raceName}
-                          </td>
-                          <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: point.position <= 3 ? '#ffd700' : '#333'
-                          }}>
+              <table className="points-table-modern">
+                <thead>
+                  <tr>
+                    <th>Pilote</th>
+                    <th>Demi-finale</th>
+                    <th>Position</th>
+                    <th>Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {semifinalPoints
+                    .sort((a, b) => b.points - a.points || a.position - b.position)
+                    .map((point) => (
+                      <tr key={point.id} className={
+                        point.points >= 8 ? 'podium-1' : 
+                        point.points >= 5 ? 'podium-2' : 
+                        point.points > 0 ? 'podium-3' : 'no-points'
+                      }>
+                        <td>
+                          <div className="driver-info">
+                            <span className="driver-number">
+                              #{point.carNumber}
+                            </span>
+                            <span className="driver-name">
+                              {point.driverName}
+                            </span>
+                          </div>
+                        </td>
+                        <td style={{ textAlign: 'center', color: '#666' }}>
+                          {point.raceName}
+                        </td>
+                        <td>
+                          <span className={`position-cell ${
+                            point.position <= 3 ? 'position-' + point.position : 'position-other'
+                          }`}>
                             {point.position}
-                          </td>
-                          <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '1.2rem',
-                            color: point.points > 0 ? '#8e24aa' : '#dc3545'
-                          }}>
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`points-cell ${point.points > 0 ? 'points-positive' : 'points-zero'}`}>
                             {point.points} pts
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              
+              <div className="table-info-footer">
+                🥈 Points des deux demi-finales combinées pour la qualification en finale
               </div>
             </div>
           )}
 
           {/* RÉCAPITULATIF POINTS FINALE */}
           {finalPoints.length > 0 && (
-            <div style={{ 
-              background: 'white', 
-              borderRadius: '8px', 
-              padding: '1.5rem',
-              boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-              border: '2px solid #ffd700'
-            }}>
-              <h3 style={{ 
-                color: '#ffd700', 
-                marginTop: 0, 
-                marginBottom: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                🏆 Récapitulatif Points Finale - {selectedCategory}
+            <div className="points-table-container points-table-final">
+              <h3 className="points-table-header">
+                <span style={{ fontSize: '1.8rem' }}>🏆</span>
+                Récapitulatif Points Finale - {selectedCategory}
               </h3>
               
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ background: '#ffd700', color: 'black' }}>
-                      <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'center' }}>Position</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {finalPoints
-                      .sort((a, b) => a.position - b.position)
-                      .map((point) => (
-                        <tr key={point.id} style={{ borderBottom: '1px solid #ddd' }}>
-                          <td style={{ padding: '0.75rem' }}>
-                            <div style={{ fontWeight: '500', color: '#333' }}>
-                              #{point.carNumber} {point.driverName}
-                            </div>
-                          </td>
-                          <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: point.position <= 3 ? '#ffd700' : '#333'
-                          }}>
+              <table className="points-table-modern">
+                <thead>
+                  <tr>
+                    <th>Pilote</th>
+                    <th>Position</th>
+                    <th>Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {finalPoints
+                    .sort((a, b) => a.position - b.position)
+                    .map((point) => (
+                      <tr key={point.id} className={
+                        point.position === 1 ? 'podium-1' : 
+                        point.position === 2 ? 'podium-2' : 
+                        point.position === 3 ? 'podium-3' : 
+                        point.points > 0 ? '' : 'no-points'
+                      }>
+                        <td>
+                          <div className="driver-info">
+                            <span className="driver-number">
+                              #{point.carNumber}
+                            </span>
+                            <span className="driver-name">
+                              {point.driverName}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`position-cell ${
+                            point.position <= 3 ? 'position-' + point.position : 'position-other'
+                          }`}>
                             {point.position}
-                          </td>
-                          <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '1.2rem',
-                            color: point.points > 0 ? '#ffd700' : '#dc3545'
-                          }}>
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`points-cell ${point.points > 0 ? 'points-positive' : 'points-zero'}`}>
                             {point.points} pts
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              
+              <div className="table-info-footer">
+                🏆 Points de la finale officielle du meeting
               </div>
             </div>
           )}
 
           {/* BOUTON GÉNÉRATION POINTS CHAMPIONNAT */}
           {engagedDrivers.length > 0 && (
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <div className="action-buttons-container">
               <button
                 onClick={saveChampionshipMeetingPoints}
-                style={{
-                  padding: '1rem 2rem',
-                  background: '#e74c3c',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '1.1rem',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(231, 76, 60, 0.3)'
-                }}
+                className="action-btn action-btn-secondary"
               >
-                🏆 Générer Points Championnat Meeting
+                <span>🏆</span>
+                Générer Points Championnat Meeting
               </button>
-              <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
+              
+              <div className="action-btn-info">
                 Combine qualifications + demi-finales + finale pour le championnat
                 <br />
                 <strong>Inclut TOUS les {engagedDrivers.length} pilotes engagés au meeting</strong>
@@ -936,124 +914,109 @@ export default function MeetingStandingsManagement() {
           )}
 
           {/* RÉCAPITULATIF FINAL CHAMPIONNAT */}
-            {/* RÉCAPITULATIF FINAL CHAMPIONNAT */}
-            {championshipMeetingPoints.length > 0 && (
-            <div style={{ 
-                background: 'white', 
-                borderRadius: '8px', 
-                padding: '1.5rem',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                border: '3px solid #e74c3c'
-            }}>
-                <h3 style={{ 
-                color: '#e74c3c', 
-                marginTop: 0, 
-                marginBottom: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-                }}>
-                🏆 POINTS CHAMPIONNAT - {selectedCategory}
+          {championshipMeetingPoints.length > 0 && (
+            <div className="points-table-container" style={{ border: '3px solid #e74c3c' }}>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+                borderRadius: '20px 20px 0 0'
+              }} />
+              
+              <h3 className="points-table-header">
+                <span style={{ fontSize: '1.8rem' }}>🏆</span>
+                POINTS CHAMPIONNAT - {selectedCategory}
                 <span style={{ 
-                    fontSize: '0.8rem', 
-                    background: '#e74c3c', 
-                    color: 'white', 
-                    padding: '0.25rem 0.5rem', 
-                    borderRadius: '12px' 
+                  fontSize: '0.8rem', 
+                  background: '#e74c3c', 
+                  color: 'white', 
+                  padding: '0.25rem 0.5rem', 
+                  borderRadius: '12px' 
                 }}>
-                    MEETING {selectedMeetingData?.name}
+                  MEETING {selectedMeetingData?.name}
                 </span>
-                </h3>
-                
-                <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                    <tr style={{ background: '#e74c3c', color: 'white' }}>
-                        <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pos.</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pts Intermédiaires</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pts Demi</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pts Finale</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'center' }}>TOTAL MEETING</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {championshipMeetingPoints
-                        .sort((a, b) => b.totalMeetingPoints - a.totalMeetingPoints)
-                        .map((point, index) => (
-                        <tr key={point.id} style={{ 
-                            borderBottom: '1px solid #ddd',
-                            backgroundColor: index < 3 ? '#fff5f5' : 'white'
-                        }}>
-                            <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            fontSize: '1.2rem',
-                            color: index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#333'
-                            }}>
+              </h3>
+              
+              <table className="points-table-modern">
+                <thead>
+                  <tr>
+                    <th>Pos.</th>
+                    <th>Pilote</th>
+                    <th>Pts Intermédiaires</th>
+                    <th>Pts Demi</th>
+                    <th>Pts Finale</th>
+                    <th style={{ background: '#c0392b' }}>TOTAL MEETING</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {championshipMeetingPoints
+                    .sort((a, b) => b.totalMeetingPoints - a.totalMeetingPoints)
+                    .map((point, index) => (
+                      <tr key={point.id} className={
+                        index === 0 ? 'podium-1' : 
+                        index === 1 ? 'podium-2' : 
+                        index === 2 ? 'podium-3' : ''
+                      }>
+                        <td>
+                          <span className={`position-cell ${
+                            index === 0 ? 'position-1' : 
+                            index === 1 ? 'position-2' : 
+                            index === 2 ? 'position-3' : 'position-other'
+                          }`} style={{ fontSize: '1.3rem' }}>
                             {index + 1}
-                            </td>
-                            <td style={{ padding: '0.75rem' }}>
-                            <div style={{ fontWeight: '500', color: '#333' }}>
-                                #{point.carNumber} {point.driverName}
-                            </div>
-                            </td>
-                            <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: point.qualifyingPoints > 0 ? '#17a2b8' : '#ccc'
-                            }}>
+                          </span>
+                        </td>
+                        <td>
+                          <div className="driver-info">
+                            <span className="driver-number">
+                              #{point.carNumber}
+                            </span>
+                            <span className="driver-name">
+                              {point.driverName}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`points-cell ${point.qualifyingPoints > 0 ? 'points-positive' : 'points-zero'}`}>
                             {point.qualifyingPoints > 0 ? point.qualifyingPoints : '-'}
-                            </td>
-                            <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: point.semifinalPoints > 0 ? '#8e24aa' : '#ccc'
-                            }}>
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`points-cell ${point.semifinalPoints > 0 ? 'points-positive' : 'points-zero'}`}>
                             {point.semifinalPoints > 0 ? point.semifinalPoints : '-'}
-                            </td>
-                            <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: point.finalPoints > 0 ? '#ffd700' : '#ccc'
-                            }}>
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`points-cell ${point.finalPoints > 0 ? 'points-positive' : 'points-zero'}`}>
                             {point.finalPoints > 0 ? point.finalPoints : '-'}
-                            </td>
-                            <td style={{ 
-                            padding: '0.75rem', 
-                            textAlign: 'center',
-                            fontWeight: 'bold',
+                          </span>
+                        </td>
+                        <td style={{ 
+                          background: index < 3 ? 'rgba(231, 76, 60, 0.1)' : 'transparent'
+                        }}>
+                          <span className="points-cell" style={{ 
                             fontSize: '1.4rem',
-                            color: index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#e74c3c',
-                            background: index < 3 ? 'rgba(231, 76, 60, 0.1)' : 'transparent'
-                            }}>
+                            fontWeight: '800',
+                            color: index < 3 ? '#e74c3c' : '#333'
+                          }}>
                             {point.totalMeetingPoints}
-                            </td>
-                        </tr>
-                        ))}
-                    </tbody>
-                </table>
-                </div>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
 
-                <div style={{ 
-                marginTop: '1rem', 
-                fontSize: '0.9rem', 
-                color: '#666',
-                textAlign: 'center',
-                background: '#f8f9fa',
-                padding: '0.75rem',
-                borderRadius: '4px'
-                }}>
-                💡 <strong>Ces points seront utilisés pour le classement général du championnat</strong>
+              <div className="table-info-footer">
+                💡 Ces points seront utilisés pour le classement général du championnat
                 <br />
-                <small>Points intermédiaires = classement qualifications sauvegardé • Points demi/finale = bonus phases finales</small>
-                </div>
+                <small>Points intermédiaires = classement qualifications • Points demi/finale = bonus phases finales</small>
+              </div>
             </div>
-            )}
+          )}
 
         </div>
       )}
@@ -1101,139 +1064,127 @@ const StandingDisplay: React.FC<StandingDisplayProps> = ({
 }) => {
   if (standings.length === 0) {
     return (
-      <div style={{ 
-        background: '#f8f9fa', 
-        borderRadius: '8px', 
-        padding: '2rem',
-        textAlign: 'center', 
-        color: '#666' 
-      }}>
-        📊 {title} - Aucune donnée disponible
+      <div className="empty-state">
+        <span className="empty-state-icon">📊</span>
+        <div className="empty-state-title">{title} - Aucune donnée disponible</div>
       </div>
     );
   }
 
   return (
-    <div style={{ 
-      background: 'white', 
-      borderRadius: '8px', 
-      padding: '1.5rem',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      border: `2px solid ${color}`
-    }}>
-      <h3 style={{ 
-        color: color, 
-        marginTop: 0, 
-        marginBottom: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}>
+    <div className="points-table-container" style={{ position: 'relative', marginBottom: '2rem' }}>
+      {/* Barre de couleur dynamique */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '4px',
+        background: color,
+        borderRadius: '20px 20px 0 0'
+      }} />
+
+      <h3 className="points-table-header">
+        <span style={{ fontSize: '1.8rem' }}>
+          {title.includes('Essais') ? '⏱️' : 
+           title.includes('Final') ? '🏅' : 
+           title.includes('Intermédiaire') ? '📈' : '📊'}
+        </span>
         {title}
-        <span style={{ 
-          fontSize: '0.8rem', 
-          background: color, 
-          color: 'white', 
-          padding: '0.25rem 0.5rem', 
-          borderRadius: '12px' 
-        }}>
+        <span className="points-table-badge">
           🔄 Temps réel
         </span>
       </h3>
       
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: color, color: 'white' }}>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pos.</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-              {showBreakdown && <th style={{ padding: '0.75rem', textAlign: 'center' }}>Essais</th>}
-              {showBreakdown && qualifyingRaces.map((race, index) => (
-                <th key={race.id} style={{ padding: '0.75rem', textAlign: 'center' }}>
-                  Q{index + 1}
-                </th>
-              ))}
-              {showTotal && <th style={{ padding: '0.75rem', textAlign: 'center' }}>Total</th>}
-              {showFinalPoints && <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pts Meeting</th>}
-              {!showTotal && <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {standings.map((pilot, index) => (
-              <tr key={pilot.driverId} style={{ 
-                borderBottom: '1px solid #ddd',
-                backgroundColor: index < 3 ? '#f0fff0' : 'white'
-              }}>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  color: index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#333'
-                }}>
+      <table className="points-table-modern">
+        <thead>
+          <tr>
+            <th>Pos.</th>
+            <th>Pilote</th>
+            {showBreakdown && <th>Essais</th>}
+            {showBreakdown && qualifyingRaces.map((race, index) => (
+              <th key={race.id}>
+                Q{index + 1}
+              </th>
+            ))}
+            {showTotal && <th>Total</th>}
+            {showFinalPoints && <th>Pts Meeting</th>}
+            {!showTotal && <th>Points</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {standings.map((pilot, index) => (
+            <tr key={pilot.driverId} className={
+              index < 3 ? (index === 0 ? 'podium-1' : index === 1 ? 'podium-2' : 'podium-3') : ''
+            }>
+              <td>
+                <span className={`position-cell ${
+                  index === 0 ? 'position-1' : 
+                  index === 1 ? 'position-2' : 
+                  index === 2 ? 'position-3' : 'position-other'
+                }`}>
                   {pilot.finalPosition || pilot.position}
-                </td>
-                <td style={{ padding: '0.75rem' }}>
-                  <div style={{ fontWeight: '500', color: '#333' }}>
-                    #{pilot.carNumber} {pilot.driverName}
-                  </div>
-                </td>
-                {showBreakdown && (
-                  <td style={{ 
-                    padding: '0.75rem', 
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    color: pilot.timeTrialsPoints > 0 ? '#28a745' : '#6c757d'
-                  }}>
+                </span>
+              </td>
+              <td>
+                <div className="driver-info">
+                  <span className="driver-number">
+                    #{pilot.carNumber}
+                  </span>
+                  <span className="driver-name">
+                    {pilot.driverName}
+                  </span>
+                </div>
+              </td>
+              {showBreakdown && (
+                <td>
+                  <span className={`points-cell ${pilot.timeTrialsPoints > 0 ? 'points-positive' : 'points-zero'}`}>
                     {pilot.timeTrialsPoints || 0}
-                  </td>
-                )}
-                {showBreakdown && qualifyingRaces.map((race) => (
-                  <td key={race.id} style={{ 
-                    padding: '0.75rem', 
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    color: (pilot.qualifyingPoints?.[race.id] || 0) > 0 ? '#667eea' : '#6c757d'
-                  }}>
+                  </span>
+                </td>
+              )}
+              {showBreakdown && qualifyingRaces.map((race) => (
+                <td key={race.id}>
+                  <span className={`points-cell ${(pilot.qualifyingPoints?.[race.id] || 0) > 0 ? 'points-positive' : 'points-zero'}`}>
                     {pilot.qualifyingPoints?.[race.id] || 0}
-                  </td>
-                ))}
-                {showTotal && (
-                  <td style={{ 
-                    padding: '0.75rem', 
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: '1.2rem',
-                    color: color
+                  </span>
+                </td>
+              ))}
+              {showTotal && (
+                <td>
+                  <span className="points-cell points-positive" style={{ 
+                    fontSize: '1.3rem',
+                    color: color.includes('gradient') ? '#1e3c72' : color
                   }}>
                     {pilot.totalPoints}
-                  </td>
-                )}
-                {showFinalPoints && (
-                  <td style={{ 
-                    padding: '0.75rem', 
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: '1.2rem',
-                    color: '#8e24aa'
-                  }}>
+                  </span>
+                </td>
+              )}
+              {showFinalPoints && (
+                <td>
+                  <span className="points-cell" style={{ fontSize: '1.2rem', color: '#8e24aa' }}>
                     {Math.max(0, 17 - (pilot.finalPosition || 1))}
-                  </td>
-                )}
-                {!showTotal && (
-                  <td style={{ 
-                    padding: '0.75rem', 
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    fontSize: '1.2rem',
-                    color: color
-                  }}>
+                  </span>
+                </td>
+              )}
+              {!showTotal && (
+                <td>
+                  <span className="points-cell points-positive">
                     {pilot.points || pilot.totalPoints}
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </span>
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div className="table-info-footer">
+        📊 <strong>Classement calculé en temps réel</strong> selon les résultats du chronométrage
+        <br />
+        <small style={{ color: color.includes('gradient') ? '#666' : color }}>
+          ⚡ Mise à jour automatique après chaque validation de temps
+        </small>
       </div>
     </div>
   );
