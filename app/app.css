@@ -1152,3 +1152,552 @@ body {
     align-items: stretch;
   }
 }
+
+/* ===== TABLEAUX DE POINTS MODERNES ===== */
+.points-table-container {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.points-table-header {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #1a1a1a;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+}
+
+.points-table-badge {
+  font-size: 0.8rem;
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.points-table-modern {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.points-table-modern thead tr {
+  background: var(--primary);
+  color: white;
+}
+
+.points-table-modern th {
+  padding: 1rem 0.75rem;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.points-table-modern th:first-child {
+  text-align: center;
+}
+
+.points-table-modern th:nth-child(2) {
+  text-align: left;
+}
+
+.points-table-modern tbody tr {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.points-table-modern tbody tr:hover {
+  background: rgba(255,255,255,0.95);
+  transform: scale(1.01);
+}
+
+.points-table-modern tbody tr.podium-1 {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%);
+}
+
+.points-table-modern tbody tr.podium-2 {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(169, 169, 169, 0.1) 100%);
+}
+
+.points-table-modern tbody tr.podium-3 {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.2) 0%, rgba(184, 115, 51, 0.1) 100%);
+}
+
+.points-table-modern td {
+  padding: 1rem 0.75rem;
+  text-align: center;
+}
+
+.points-table-modern td:nth-child(2) {
+  text-align: left;
+}
+
+.position-cell {
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+
+.position-1 { color: #ffd700; }
+.position-2 { color: #c0c0c0; }
+.position-3 { color: #cd7f32; }
+.position-other { color: #333; }
+
+.driver-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.driver-number {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+  color: #FFD700;
+  border-radius: 8px;
+  padding: 0.25rem 0.6rem;
+  font-weight: 800;
+  font-size: 0.9rem;
+  border: 1px solid #FFD700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  letter-spacing: 0.5px;
+}
+
+.driver-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.time-cell {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e3c72;
+}
+
+.points-cell {
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+
+.points-positive { color: #28a745; }
+.points-zero { color: #6c757d; }
+
+.table-info-footer {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  background: rgba(248, 249, 250, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Barres de couleur spécifiques */
+.points-table-timetrials::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+.points-table-qualifying::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+.points-table-semifinal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #8e24aa 0%, #7b1fa2 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+.points-table-final::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .points-table-container {
+    padding: 1.5rem;
+  }
+  
+  .points-table-header {
+    font-size: 1.1rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .points-table-modern th,
+  .points-table-modern td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+/* Ligne spéciale pour les pilotes sans points */
+.points-table-modern tbody tr.no-points {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(248, 249, 250, 0.8) 100%);
+  opacity: 0.8;
+}
+
+.points-table-modern tbody tr.no-points:hover {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(248, 249, 250, 0.9) 100%);
+  opacity: 1;
+}
+
+/* Badge de statut personnalisé */
+.status-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+/* Amélioration responsive pour les statuts */
+@media (max-width: 768px) {
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+/* ===== INTERFACE DE SAISIE UNIFORMISÉE ===== */
+.timing-input-container {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.timing-input-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.timing-input-container.has-time {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.05) 100%);
+  border: 2px solid rgba(40, 167, 69, 0.3);
+}
+
+.timing-driver-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.timing-driver-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.timing-driver-number {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+  color: #FFD700;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: 2px solid #FFD700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  letter-spacing: 0.5px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.timing-driver-name {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1a1a1a;
+}
+
+.timing-driver-team {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+.timing-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: end;
+}
+
+.timing-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.timing-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 200px 120px;
+  gap: 1.5rem; /* ✨ Augmenté de 1rem à 1.5rem */
+  margin-bottom: 1rem;
+  align-items: end;
+}
+.timing-inputs-grid-qualifying {
+  display: grid;
+  grid-template-columns: 2fr 180px 120px; /* ✨ Plus d'espace pour le temps, moins pour le statut */
+  gap: 2rem; /* ✨ Encore plus d'espace */
+  margin-bottom: 1rem;
+  align-items: end;
+}
+
+.timing-input-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.timing-input-field {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(30, 60, 114, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', monospace;
+  font-weight: 600;
+}
+
+.timing-input-field:hover {
+  border-color: rgba(255, 107, 53, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.2);
+}
+
+.timing-input-field:focus {
+  outline: none;
+  border-color: rgba(255, 107, 53, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+  transform: translateY(-1px);
+}
+
+.timing-select-field {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(30, 60, 114, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  font-weight: 600;
+}
+
+.timing-select-field:hover {
+  border-color: rgba(255, 107, 53, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.2);
+}
+
+.timing-select-field:focus {
+  outline: none;
+  border-color: rgba(255, 107, 53, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+}
+
+.timing-validate-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-self: end;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.timing-validate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+  filter: brightness(1.1);
+}
+
+.timing-validate-btn:disabled {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.timing-validate-btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+/* Info box pour les types de sessions */
+.session-info-box {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+  border: 2px solid rgba(40, 167, 69, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.1);
+}
+
+.session-info-box.qualifying {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.session-info-box.race {
+  background: linear-gradient(135deg, rgba(142, 36, 170, 0.1) 0%, rgba(123, 31, 162, 0.1) 100%);
+  border-color: rgba(142, 36, 170, 0.3);
+  box-shadow: 0 4px 15px rgba(142, 36, 170, 0.1);
+}
+
+.session-info-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #155724;
+}
+
+.session-info-box.qualifying .session-info-title {
+  color: #1565c0;
+}
+
+.session-info-box.race .session-info-title {
+  color: #7b1fa2;
+}
+
+.session-info-text {
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .timing-driver-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .timing-inputs-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .timing-driver-info {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+}
+
+/* Tableau de classement temps réel */
+.points-table-timing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #1E3C72 0%, #2A5298 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+/* Amélioration pour les statuts dans le tableau */
+.points-table-modern tbody tr.no-points {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(248, 249, 250, 0.8) 100%);
+  opacity: 0.85;
+}
+
+.points-table-modern tbody tr.no-points:hover {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(248, 249, 250, 0.9) 100%);
+  opacity: 1;
+}
+
+/* Style spécial pour les temps dans le tableau */
+.time-cell {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  color: #1e3c72;
+}
+
+/* Responsive pour les badges de statut */
+@media (max-width: 768px) {
+  .time-cell {
+    font-size: 1rem;
+  }
+}

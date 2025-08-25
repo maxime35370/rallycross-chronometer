@@ -902,59 +902,95 @@ export default function Timing() {
   const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
   const availableCategories = selectedMeetingData?.categories || [];
 
+  // Fonctions utilitaires pour le style du tableau de classement
+  const getTimingTableGradient = (type: string): string => {
+    const gradients: { [key: string]: string } = {
+      'timeTrials': 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+      'qualifying': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'semifinal': 'linear-gradient(135deg, #8e24aa 0%, #7b1fa2 100%)',
+      'final': 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)'
+    };
+    return gradients[type] || 'linear-gradient(135deg, #1E3C72 0%, #2A5298 100%)';
+  };
+
+  const getTimingTableColor = (type: string): string => {
+    const colors: { [key: string]: string } = {
+      'timeTrials': '#28a745',
+      'qualifying': '#667eea',
+      'semifinal': '#8e24aa',
+      'final': '#FFD700'
+    };
+    return colors[type] || '#1E3C72';
+  };
+
+  const getStatusIcon = (status: string): string => {
+    const icons: { [key: string]: string } = {
+      'dnf': '🔥',
+      'dns': '❌',
+      'dsq_race': '🚫',
+      'dsq_general': '⛔'
+    };
+    return icons[status] || '⚠️';
+  };
+
+  const getStatusBadgeStyleInline = (status: string) => {
+    const baseStyle = {
+      padding: '0.2rem 0.5rem',
+      borderRadius: '8px',
+      fontSize: '0.7rem',
+      fontWeight: '700' as const,
+      color: 'white',
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.3px'
+    };
+
+    const statusStyles: { [key: string]: any } = {
+      'dnf': { ...baseStyle, background: 'linear-gradient(135deg, #dc3545, #c82333)' },
+      'dns': { ...baseStyle, background: 'linear-gradient(135deg, #6c757d, #5a6268)' },
+      'dsq_race': { ...baseStyle, background: 'linear-gradient(135deg, #fd7e14, #e55353)' },
+      'dsq_general': { ...baseStyle, background: 'linear-gradient(135deg, #e83e8c, #d63384)' }
+    };
+
+    return statusStyles[status] || { ...baseStyle, background: '#333' };
+};
+
+
   return (
     <div style={{ padding: '2rem' }}>
-      <h2 style={{ color: '#1e3c72', marginBottom: '1.5rem' }}>
-        ⏱️ Chronométrage des Courses
-      </h2>
+      {/* HEADER CHRONOMÉTRAGE MODERNE */}
+      <div className="page-header page-header-timing">
+        <h2 className="page-title">
+          <span className="page-title-icon">⏱️</span>
+          Chronométrage des Courses
+        </h2>
 
-      {/* Sélection année */}
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-          📅 Saison :
-        </label>
-        <select
-          value={selectedYear}
-          onChange={(e) => {
-            setSelectedYear(parseInt(e.target.value));
-            setSelectedMeeting('');
-            setSelectedCategory('');
-            setSelectedRace(null);
-          }}
-          style={{ 
-            padding: '0.5rem', 
-            borderRadius: '4px', 
-            border: '1px solid #ccc',
-            fontSize: '1rem',
-            color: '#333',
-            backgroundColor: 'white',
-            minWidth: '150px'
-          }}
-        >
-          <option value={2024}>2024</option>
-          <option value={2025}>2025</option>
-          <option value={2026}>2026</option>
-        </select>
-      </div>
+        {/* FILTRES INTÉGRÉS DANS LE HEADER */}
+        <div className="filter-row">
+          <div className="filter-item">
+            <label className="filter-label-modern">
+              <span>📅</span>
+              Saison :
+            </label>
+            <select
+              value={selectedYear}
+              onChange={(e) => {
+                setSelectedYear(parseInt(e.target.value));
+                setSelectedMeeting('');
+                setSelectedCategory('');
+                setSelectedRace(null);
+              }}
+              className="select-modern"
+            >
+              <option value={2024}>🏁 2024</option>
+              <option value={2025}>🏁 2025</option>
+              <option value={2026}>🏁 2026</option>
+            </select>
+          </div>
 
-      {/* Sélection meeting et catégorie */}
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '8px', 
-        marginBottom: '1.5rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-              🏁 Meeting :
+          <div className="filter-item">
+            <label className="filter-label-modern">
+              <span>🏁</span>
+              Meeting :
             </label>
             <select
               value={selectedMeeting}
@@ -963,15 +999,8 @@ export default function Timing() {
                 setSelectedCategory('');
                 setSelectedRace(null);
               }}
-              style={{ 
-                width: '100%',
-                padding: '0.5rem', 
-                borderRadius: '4px', 
-                border: '1px solid #ccc',
-                fontSize: '1rem',
-                color: '#333',
-                backgroundColor: 'white'
-              }}
+              className="select-modern"
+              style={{ minWidth: '200px' }}
             >
               <option value="">Sélectionnez un meeting</option>
               {meetings.map(meeting => (
@@ -982,9 +1011,10 @@ export default function Timing() {
             </select>
           </div>
 
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-              🏆 Catégorie :
+          <div className="filter-item">
+            <label className="filter-label-modern">
+              <span>🏆</span>
+              Catégorie :
             </label>
             <select
               value={selectedCategory}
@@ -993,14 +1023,10 @@ export default function Timing() {
                 setSelectedRace(null);
               }}
               disabled={!selectedMeeting}
+              className="select-modern"
               style={{ 
-                width: '100%',
-                padding: '0.5rem', 
-                borderRadius: '4px', 
-                border: '1px solid #ccc',
-                fontSize: '1rem',
-                color: '#333',
-                backgroundColor: selectedMeeting ? 'white' : '#f5f5f5'
+                opacity: selectedMeeting ? 1 : 0.6,
+                cursor: selectedMeeting ? 'pointer' : 'not-allowed'
               }}
             >
               <option value="">Sélectionnez une catégorie</option>
@@ -1009,71 +1035,108 @@ export default function Timing() {
               ))}
             </select>
           </div>
+
+          {/* STATS À DROITE */}
+          {selectedMeeting && selectedCategory && (
+            <div className="stats-container">
+              <div className="stat-card stat-card-primary">
+                <div className="stat-number stat-number-primary">
+                  {races.length}
+                </div>
+                <div className="stat-label">Sessions</div>
+              </div>
+
+              {selectedRace && (
+                <div className="stat-card stat-card-secondary">
+                  <div className="stat-number stat-number-secondary">
+                    {driversInfo.length}
+                  </div>
+                  <div className="stat-label">Pilotes</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Sélection de session */}
+      {/* SÉLECTION DE SESSION */}
       {selectedMeeting && selectedCategory && races.length > 0 && (
-        <div style={{ 
-          background: '#f8f9fa', 
-          padding: '1rem', 
-          borderRadius: '8px', 
-          marginBottom: '1.5rem',
-          border: '1px solid #e9ecef'
-        }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>
-            🏁 Session à chronométrer :
-          </label>
-          <select
-            value={selectedRace?.id || ''}
-            onChange={(e) => {
-              const race = races.find(r => r.id === e.target.value);
-              setSelectedRace(race || null);
-            }}
-            style={{ 
-              width: '100%',
-              padding: '0.5rem', 
-              borderRadius: '4px', 
-              border: '1px solid #ccc',
-              fontSize: '1rem',
-              color: '#333',
-              backgroundColor: 'white'
-            }}
-          >
-            <option value="">Sélectionnez une session</option>
-            {races.map(race => {
-              const sessionType = getSessionTypeLabel(race.type);
-              return (
-                <option key={race.id} value={race.id}>
-                  {sessionType.emoji} {race.name} ({race.drivers.length} pilotes)
-                </option>
-              );
-            })}
-          </select>
+        <div className="filters-section">
+          <div className="filter-item">
+            <label className="filter-label">
+              <span>🏁</span>
+              Session à chronométrer :
+            </label>
+            <select
+              value={selectedRace?.id || ''}
+              onChange={(e) => {
+                const race = races.find(r => r.id === e.target.value);
+                setSelectedRace(race || null);
+              }}
+              className="select-modern"
+              style={{ minWidth: '300px' }}
+            >
+              <option value="">Sélectionnez une session</option>
+              {races.map(race => {
+                const sessionType = getSessionTypeLabel(race.type);
+                return (
+                  <option key={race.id} value={race.id}>
+                    {sessionType.emoji} {race.name} ({race.drivers.length} pilotes)
+                  </option>
+                );
+              })}
+            </select>
+          </div>
           
+          {/* CONTEXTE SESSION SÉLECTIONNÉE */}
           {selectedRace && (
-            <div style={{ marginTop: '1rem', padding: '1rem', background: '#28a745', color: 'white', borderRadius: '8px' }}>
+            <div className="context-info context-success" style={{ marginTop: '1rem' }}>
               <strong>📋 Session sélectionnée :</strong> {selectedRace.name}
-              <br />
-              <small style={{ opacity: 0.9 }}>
+              <div className="context-info-text">
                 {selectedRace.laps} tour(s) • {selectedRace.drivers.length} pilote(s) • {getSessionTypeLabel(selectedRace.type).label}
-              </small>
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {/* Interface de chronométrage */}
+      {/* INTERFACE DE CHRONOMÉTRAGE */}
       {selectedRace && driversInfo.length > 0 && (
         <div style={{ 
-          background: 'white', 
-          borderRadius: '8px', 
-          padding: '1.5rem',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)',
+          backdropFilter: 'blur(12px)',
+          border: '2px solid rgba(255, 193, 7, 0.3)',
+          borderRadius: '20px',
+          padding: '2rem',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.1)',
+          position: 'relative',
+          overflow: 'hidden',
           marginBottom: '2rem'
         }}>
-          <h3 style={{ color: '#333', marginTop: 0, marginBottom: '1.5rem' }}>
-            ⏱️ Saisie des temps - {selectedRace.name}
+          {/* Barre jaune chronométrage */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)',
+            borderRadius: '20px 20px 0 0'
+          }} />
+
+          <h3 style={{ 
+            fontFamily: 'Orbitron, monospace',
+            fontWeight: '700',
+            color: '#1a1a1a',
+            marginTop: 0, 
+            marginBottom: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            fontSize: '1.5rem'
+          }}>
+            <span style={{ fontSize: '2rem' }}>⏱️</span>
+            Saisie des temps - {selectedRace.name}
           </h3>
 
           {selectedRace.type === 'timeTrials' ? (
@@ -1107,117 +1170,171 @@ export default function Timing() {
         </div>
       )}
 
-      {/* Classement en temps réel */}
-      {selectedRace && raceResults.length > 0 && (
-        <div style={{ 
-          background: 'white', 
-          borderRadius: '8px', 
-          padding: '1.5rem',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-          marginBottom: '2rem'
-        }}>
-          <h3 style={{ color: '#333', marginTop: 0, marginBottom: '1rem' }}>
-            🏆 Classement - {selectedRace.name}
-          </h3>
-          
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: '#667eea', color: 'white' }}>
-                  <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pos.</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'center' }}>Temps Total</th>
-                  {selectedRace.type !== 'timeTrials' && selectedRace.type !== 'qualifying' && (
-                    <th style={{ padding: '0.75rem', textAlign: 'center' }}>Meilleur Tour</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {raceResults.filter(result => selectedRace.drivers.includes(result.driverId)).map((result, index) => (
-                  <tr key={result.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ 
-                      padding: '0.75rem', 
-                      textAlign: 'center',
-                      fontWeight: 'bold',
-                      color: result.status === 'finished' 
-                        ? (index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#333')
-                        : '#dc3545'
-                    }}>
-                      {result.status === 'finished' ? (index + 1) : getStatusLabel(result.status)}
-                    </td>
-                    <td style={{ padding: '0.75rem', color: '#333' }}>
-                      <div style={{ fontWeight: '500' }}>
-                        #{result.carNumber} {result.driverName}
-                      </div>
-                    </td>
-                    <td style={{ 
-                      padding: '0.75rem', 
-                      textAlign: 'center',
-                      fontFamily: 'monospace',
-                      fontSize: '1.1rem',
-                      fontWeight: 'bold',
-                      color: '#1e3c72'
-                    }}>
-                      {result.status === 'finished' ? formatTime(result.totalTime) : getStatusLabel(result.status)}
-                    </td>
-                    {selectedRace.type !== 'timeTrials' && selectedRace.type !== 'qualifying' && (
-                      <td style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'center',
-                        fontFamily: 'monospace',
-                        color: '#666'
-                      }}>
-                        {result.status === 'finished' ? formatTime(result.bestLap) : '-'}
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* CLASSEMENT EN TEMPS RÉEL MODERNISÉ */}
+{selectedRace && raceResults.length > 0 && (
+  <div className="points-table-container points-table-timing">
+    {/* Barre de couleur selon le type */}
+    <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '4px',
+      background: getTimingTableGradient(selectedRace.type),
+      borderRadius: '20px 20px 0 0'
+    }} />
+
+    <h3 className="points-table-header">
+      <span style={{ fontSize: '1.8rem' }}>🏆</span>
+      Classement - {selectedRace.name}
+      <span className="points-table-badge">
+        🔄 TEMPS RÉEL
+      </span>
+    </h3>
+    
+    <table className="points-table-modern">
+      <thead>
+        <tr>
+          <th>POS.</th>
+          <th>PILOTE</th>
+          <th>TEMPS TOTAL</th>
+          {selectedRace.type !== 'timeTrials' && selectedRace.type !== 'qualifying' && (
+            <th>MEILLEUR TOUR</th>
+          )}
+        </tr>
+      </thead>
+      <tbody>
+        {raceResults.filter(result => selectedRace.drivers.includes(result.driverId)).map((result, index) => (
+          <tr key={result.id} className={
+            result.status === 'finished' ? (
+              index === 0 ? 'podium-1' : 
+              index === 1 ? 'podium-2' : 
+              index === 2 ? 'podium-3' : ''
+            ) : 'no-points'
+          }>
+            <td>
+              <span className={`position-cell ${
+                result.status === 'finished' ? (
+                  index === 0 ? 'position-1' : 
+                  index === 1 ? 'position-2' : 
+                  index === 2 ? 'position-3' : 'position-other'
+                ) : 'position-other'
+              }`}>
+                {result.status === 'finished' ? (index + 1) : getStatusIcon(result.status)}
+              </span>
+            </td>
+            <td>
+              <div className="driver-info">
+                <span className="driver-number">
+                  #{result.carNumber}
+                </span>
+                <span className="driver-name">
+                  {result.driverName}
+                </span>
+              </div>
+            </td>
+            <td>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="time-cell">
+                  {result.status === 'finished' ? formatTime(result.totalTime) : ''}
+                </span>
+                {result.status !== 'finished' && (
+                  <span style={getStatusBadgeStyleInline(result.status)}>
+                    {getStatusLabel(result.status)}
+                  </span>
+                )}
+              </div>
+            </td>
+            {selectedRace.type !== 'timeTrials' && selectedRace.type !== 'qualifying' && (
+              <td>
+                <span className="time-cell" style={{ fontSize: '1rem', color: '#666' }}>
+                  {result.status === 'finished' ? formatTime(result.bestLap) : '-'}
+                </span>
+              </td>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    
+    <div className="table-info-footer">
+      🏁 <strong>Classement en direct</strong> - Mise à jour automatique après chaque validation
+      <br />
+      <small style={{ color: getTimingTableColor(selectedRace.type) }}>
+        ⚡ Session : {getSessionTypeLabel(selectedRace.type).label} • {selectedRace.laps} tour(s)
+      </small>
+    </div>
+  </div>
+)}
+
+      {/* AFFICHAGE DES POINTS (reste identique mais avec bordures modernisées) */}
+      {selectedRace && selectedRace.type === 'timeTrials' && raceResults.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <TimeTrialsPointsDisplay 
+            meetingId={selectedMeeting}
+            category={selectedCategory}
+            raceResults={raceResults}
+            refreshKey={pointsRefreshKey}
+          />
+        </div>
+      )}
+
+      {selectedRace && selectedRace.type === 'qualifying' && raceResults.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <QualifyingPointsDisplay 
+            raceId={selectedRace.id}
+            raceName={selectedRace.name}
+            category={selectedCategory}
+            refreshKey={qualifyingPointsRefreshKey}
+          />
+        </div>
+      )}
+
+      {selectedRace && selectedRace.type === 'semifinal' && raceResults.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <SemifinalPointsDisplay 
+            raceId={selectedRace.id}
+            raceName={selectedRace.name}
+            category={selectedCategory}
+            refreshKey={semifinalPointsRefreshKey}
+            selectedRace={selectedRace}
+          />
+        </div>
+      )}
+
+      {selectedRace && selectedRace.type === 'final' && raceResults.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <FinalPointsDisplay 
+            raceId={selectedRace.id}
+            raceName={selectedRace.name}
+            category={selectedCategory}
+            refreshKey={finalPointsRefreshKey}
+            selectedRace={selectedRace}
+          />
+        </div>
+      )}
+
+      {/* ÉTATS VIDES */}
+      {selectedMeeting && selectedCategory && races.length === 0 && (
+        <div className="empty-state">
+          <span className="empty-state-icon">⏱️</span>
+          <div className="empty-state-title">Aucune session disponible</div>
+          <div className="empty-state-text">
+            Aucune session avec pilotes assignés trouvée pour ce meeting/catégorie
+            <br />
+            <small>Allez dans "🏁 Sessions" pour assigner des pilotes aux sessions</small>
           </div>
         </div>
       )}
 
-      {/* ✅ AFFICHAGE DES POINTS ESSAIS CHRONOMÉTRÉS */}
-      {selectedRace && selectedRace.type === 'timeTrials' && raceResults.length > 0 && (
-        <TimeTrialsPointsDisplay 
-          meetingId={selectedMeeting}
-          category={selectedCategory}
-          raceResults={raceResults}
-          refreshKey={pointsRefreshKey}
-        />
-      )}
-
-      {/* ✅ AFFICHAGE DES POINTS MANCHES QUALIFICATIVES */}
-      {selectedRace && selectedRace.type === 'qualifying' && raceResults.length > 0 && (
-        <QualifyingPointsDisplay 
-          raceId={selectedRace.id}
-          raceName={selectedRace.name}
-          category={selectedCategory}
-          refreshKey={qualifyingPointsRefreshKey}
-        />
-      )}
-
-      {/* ✅ AFFICHAGE DES POINTS DEMI-FINALES */}
-      {selectedRace && selectedRace.type === 'semifinal' && raceResults.length > 0 && (
-        <SemifinalPointsDisplay 
-          raceId={selectedRace.id}
-          raceName={selectedRace.name}
-          category={selectedCategory}
-          refreshKey={semifinalPointsRefreshKey}
-          selectedRace={selectedRace}
-        />
-      )}
-
-      {/* ✅ AFFICHAGE DES POINTS FINALES */}
-      {selectedRace && selectedRace.type === 'final' && raceResults.length > 0 && (
-        <FinalPointsDisplay 
-          raceId={selectedRace.id}
-          raceName={selectedRace.name}
-          category={selectedCategory}
-          refreshKey={finalPointsRefreshKey}
-          selectedRace={selectedRace}
-        />
+      {!selectedMeeting && (
+        <div className="empty-state">
+          <span className="empty-state-icon">⏱️</span>
+          <div className="empty-state-title">Sélectionnez un meeting et une catégorie</div>
+          <div className="empty-state-text">
+            Choisissez d'abord un meeting et une catégorie pour accéder au chronométrage
+          </div>
+        </div>
       )}
     </div>
   );
@@ -1280,108 +1397,77 @@ const TimeTrialsPointsDisplay: React.FC<TimeTrialsPointsDisplayProps> = ({
 
   if (points.length === 0) {
     return (
-      <div style={{ 
-        background: '#f8f9fa', 
-        borderRadius: '8px', 
-        padding: '2rem',
-        textAlign: 'center', 
-        color: '#666' 
-      }}>
-        📊 Aucun point attribué pour les essais chronométrés
+      <div className="empty-state">
+        <span className="empty-state-icon">📊</span>
+        <div className="empty-state-title">Aucun point attribué</div>
+        <div className="empty-state-text">
+          Aucun point attribué pour les essais chronométrés
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ 
-      background: 'white', 
-      borderRadius: '8px', 
-      padding: '1.5rem',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      border: '2px solid #28a745'
-    }}>
-      <h3 style={{ 
-        color: '#28a745', 
-        marginTop: 0, 
-        marginBottom: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}>
-        🏁 Points Essais Chronométrés - {category}
-        <span style={{ 
-          fontSize: '0.8rem', 
-          background: '#28a745', 
-          color: 'white', 
-          padding: '0.25rem 0.5rem', 
-          borderRadius: '12px' 
-        }}>
+    <div className="points-table-container points-table-timetrials">
+      <h3 className="points-table-header">
+        <span style={{ fontSize: '1.8rem' }}>🏁</span>
+        Points Essais Chronométrés - {category}
+        <span className="points-table-badge">
           🔄 Temps réel
         </span>
       </h3>
       
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#28a745', color: 'white' }}>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pos.</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Temps</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point, index) => (
-              <tr key={point.id} style={{ 
-                borderBottom: '1px solid #ddd',
-                backgroundColor: point.points > 0 ? '#f0fff0' : 'white'
-              }}>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  color: index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#333'
-                }}>
+      <table className="points-table-modern">
+        <thead>
+          <tr>
+            <th>Pos.</th>
+            <th>Pilote</th>
+            <th>Temps</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.map((point, index) => (
+            <tr key={point.id} className={
+              index === 0 ? 'podium-1' : 
+              index === 1 ? 'podium-2' : 
+              index === 2 ? 'podium-3' : ''
+            }>
+              <td>
+                <span className={`position-cell ${
+                  index === 0 ? 'position-1' : 
+                  index === 1 ? 'position-2' : 
+                  index === 2 ? 'position-3' : 'position-other'
+                }`}>
                   {point.position}
-                </td>
-                <td style={{ padding: '0.75rem' }}>
-                  <div style={{ fontWeight: '500', color: '#333' }}>
-                    #{point.carNumber} {point.driverName}
-                  </div>
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontFamily: 'monospace',
-                  fontSize: '1.1rem',
-                  color: '#1e3c72'
-                }}>
+                </span>
+              </td>
+              <td>
+                <div className="driver-info">
+                  <span className="driver-number">
+                    #{point.carNumber}
+                  </span>
+                  <span className="driver-name">
+                    {point.driverName}
+                  </span>
+                </div>
+              </td>
+              <td>
+                <span className="time-cell">
                   {formatTime(point.bestTime)}
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  fontSize: '1.2rem',
-                  color: point.points > 0 ? '#28a745' : '#6c757d'
-                }}>
+                </span>
+              </td>
+              <td>
+                <span className={`points-cell ${point.points > 0 ? 'points-positive' : 'points-zero'}`}>
                   {point.points > 0 ? `${point.points} pts` : '-'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       
-      <div style={{ 
-        marginTop: '1rem', 
-        fontSize: '0.9rem', 
-        color: '#666',
-        textAlign: 'center',
-        background: '#f8f9fa',
-        padding: '0.75rem',
-        borderRadius: '4px'
-      }}>
+      <div className="table-info-footer">
         💡 <strong>Barème :</strong> 1er = 5pts • 2ème = 4pts • 3ème = 3pts • 4ème = 2pts • 5ème = 1pt • 6ème+ = 0pt
         <br />
         <small style={{ color: '#28a745' }}>🔄 Mise à jour automatique en temps réel</small>
@@ -1459,6 +1545,28 @@ const QualifyingPointsDisplay: React.FC<QualifyingPointsDisplayProps> = ({
     return colors[status] || '#333';
   };
 
+  const getStatusBadgeStyle = (status: string) => {
+    const baseStyle = {
+      padding: '0.25rem 0.6rem',
+      borderRadius: '12px',
+      fontSize: '0.8rem',
+      fontWeight: '700',
+      color: 'white',
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.5px'
+    };
+
+    const statusStyles: { [key: string]: any } = {
+      'finished': { ...baseStyle, background: 'linear-gradient(135deg, #28a745, #20c997)' },
+      'dnf': { ...baseStyle, background: 'linear-gradient(135deg, #dc3545, #c82333)' },
+      'dns': { ...baseStyle, background: 'linear-gradient(135deg, #6c757d, #5a6268)' },
+      'dsq_race': { ...baseStyle, background: 'linear-gradient(135deg, #fd7e14, #e55353)' },
+      'dsq_general': { ...baseStyle, background: 'linear-gradient(135deg, #e83e8c, #d63384)' }
+    };
+
+    return statusStyles[status] || { ...baseStyle, background: '#333' };
+  };
+
   const formatTime = (seconds: number): string => {
     if (!seconds) return '-';
     const minutes = Math.floor(seconds / 60);
@@ -1469,14 +1577,12 @@ const QualifyingPointsDisplay: React.FC<QualifyingPointsDisplayProps> = ({
 
   if (points.length === 0) {
     return (
-      <div style={{ 
-        background: '#f8f9fa', 
-        borderRadius: '8px', 
-        padding: '2rem',
-        textAlign: 'center', 
-        color: '#666' 
-      }}>
-        📊 Aucun point attribué pour cette manche qualificative
+      <div className="empty-state">
+        <span className="empty-state-icon">📊</span>
+        <div className="empty-state-title">Aucun point attribué</div>
+        <div className="empty-state-text">
+          Aucun point attribué pour cette manche qualificative
+        </div>
       </div>
     );
   }
@@ -1484,110 +1590,96 @@ const QualifyingPointsDisplay: React.FC<QualifyingPointsDisplayProps> = ({
   const engagesPresents = points[0]?.engagesPresents || 0;
 
   return (
-    <div style={{ 
-      background: 'white', 
-      borderRadius: '8px', 
-      padding: '1.5rem',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      border: '2px solid #667eea'
-    }}>
-      <h3 style={{ 
-        color: '#667eea', 
-        marginTop: 0, 
-        marginBottom: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}>
-        🏃 Points {raceName} - {category}
-        <span style={{ 
-          fontSize: '0.8rem', 
-          background: '#667eea', 
-          color: 'white', 
-          padding: '0.25rem 0.5rem', 
-          borderRadius: '12px' 
-        }}>
+    <div className="points-table-container points-table-qualifying">
+      <h3 className="points-table-header">
+        <span style={{ fontSize: '1.8rem' }}>🏃</span>
+        Points {raceName} - {category}
+        <span className="points-table-badge">
           🔄 Temps réel
         </span>
       </h3>
       
       <div style={{ 
-        marginBottom: '1rem', 
+        marginBottom: '1.5rem', 
         fontSize: '0.9rem', 
         color: '#666',
-        background: '#f8f9fa',
-        padding: '0.75rem',
-        borderRadius: '4px'
+        background: 'rgba(248, 249, 250, 0.8)',
+        backdrop: 'blur(8px)',
+        padding: '1rem',
+        borderRadius: '8px',
+        border: '1px solid rgba(0,0,0,0.05)'
       }}>
-        👥 <strong>{engagesPresents} engagés présents</strong> dans cette manche
-        <br />
-        📊 Barème : 1er=50pts • 2ème=45pts • 3ème=42pts • 4ème=40pts • 5ème=39pts • puis -1pt par position
-        <br />
-        ⚖️ Abandon = +1 pos • Déclassé = +3 pos • Non partant/Disqualifié = 0pt
+        <div style={{ marginBottom: '0.5rem' }}>
+          👥 <strong>{engagesPresents} engagés présents</strong> dans cette manche
+        </div>
+        <div style={{ marginBottom: '0.5rem' }}>
+          📊 <strong>Barème :</strong> 1er=50pts • 2ème=45pts • 3ème=42pts • 4ème=40pts • 5ème=39pts • puis -1pt par position
+        </div>
+        <div>
+          ⚖️ <strong>Pénalités :</strong> Abandon = +1 pos • Déclassé = +3 pos • Non partant/Disqualifié = 0pt
+        </div>
       </div>
       
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#667eea', color: 'white' }}>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Pos.</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Pilote</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Temps</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Statut</th>
-              <th style={{ padding: '0.75rem', textAlign: 'center' }}>Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point, index) => (
-              <tr key={point.id} style={{ 
-                borderBottom: '1px solid #ddd',
-                backgroundColor: point.points > 0 ? '#f0f8ff' : '#fff5f5'
-              }}>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  color: point.status === 'finished' && index < 3 
-                    ? (index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : '#cd7f32') 
-                    : '#333'
-                }}>
+      <table className="points-table-modern">
+        <thead>
+          <tr>
+            <th>Pos.</th>
+            <th>Pilote</th>
+            <th>Temps</th>
+            <th>Statut</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.map((point, index) => (
+            <tr key={point.id} className={
+              point.status === 'finished' && index < 3 ?
+                (index === 0 ? 'podium-1' : index === 1 ? 'podium-2' : 'podium-3') : 
+                point.points === 0 ? 'no-points' : ''
+            }>
+              <td>
+                <span className={`position-cell ${
+                  point.status === 'finished' && index < 3 ? 
+                    (index === 0 ? 'position-1' : index === 1 ? 'position-2' : 'position-3') : 
+                    'position-other'
+                }`}>
                   {point.status === 'finished' ? point.position : '-'}
-                </td>
-                <td style={{ padding: '0.75rem' }}>
-                  <div style={{ fontWeight: '500', color: '#333' }}>
-                    #{point.carNumber} {point.driverName}
-                  </div>
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontFamily: 'monospace',
-                  fontSize: '1rem',
-                  color: '#1e3c72'
-                }}>
+                </span>
+              </td>
+              <td>
+                <div className="driver-info">
+                  <span className="driver-number">
+                    #{point.carNumber}
+                  </span>
+                  <span className="driver-name">
+                    {point.driverName}
+                  </span>
+                </div>
+              </td>
+              <td>
+                <span className="time-cell">
                   {formatTime(point.totalTime || 0)}
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  color: getStatusColor(point.status),
-                  fontWeight: '500'
-                }}>
+                </span>
+              </td>
+              <td>
+                <span style={getStatusBadgeStyle(point.status)}>
                   {getStatusLabel(point.status)}
-                </td>
-                <td style={{ 
-                  padding: '0.75rem', 
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  fontSize: '1.2rem',
-                  color: point.points > 0 ? '#667eea' : '#dc3545'
-                }}>
+                </span>
+              </td>
+              <td>
+                <span className={`points-cell ${point.points > 0 ? 'points-positive' : 'points-zero'}`}>
                   {point.points > 0 ? `${point.points} pts` : '0 pt'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      <div className="table-info-footer">
+        💡 <strong>Système de points qualificatifs :</strong> Récompense la régularité et la performance sur {engagesPresents} engagés
+        <br />
+        <small style={{ color: '#667eea' }}>🔄 Calcul automatique avec gestion des abandons et pénalités</small>
       </div>
     </div>
   );
@@ -2037,82 +2129,83 @@ function TimeTrialsInput({ drivers, existingResults, onTimeSubmit, formatTime, s
     });
   };
 
-  return (
+return (
     <div>
-      <div style={{ 
-        marginBottom: '1rem', 
-        padding: '1rem', 
-        background: '#28a745', 
-        color: 'white', 
-        borderRadius: '8px',
-        border: '1px solid #1e7e34'
-      }}>
-        <strong>ℹ️ Essais Chronométrés :</strong> Saisissez le meilleur temps de chaque pilote (1 tour)
-        <br />
-        <small style={{ opacity: 0.9 }}>Format : secondes.millisecondes (ex: 63.456) • Les 5 premiers marquent des points !</small>
+      {/* Info box avec la MÊME classe que les qualifs */}
+      <div className="session-info-box">
+        <div className="session-info-title">
+          <span>ℹ️</span>
+          <strong>Essais Chronométrés :</strong>
+        </div>
+        <div className="session-info-text">
+          Saisissez le meilleur temps de chaque pilote (1 tour)
+          <br />
+          <small>Format : secondes.millisecondes (ex: 63.456) • Les 5 premiers marquent des points !</small>
+        </div>
       </div>
-      
-      <div style={{ display: 'grid', gap: '1rem' }}>
-        {drivers.sort((a: any, b: any) => a.carNumber - b.carNumber).map((driver: any) => (
-          <div key={driver.id} style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 150px 120px', 
-            gap: '1rem', 
-            alignItems: 'center',
-            padding: '1rem',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            backgroundColor: times[driver.id]?.totalTime ? '#f0fff0' : 'white'
-          }}>
-            <div>
-              <div style={{ fontWeight: '500', color: '#333' }}>
-                #{driver.carNumber} {driver.name}
-              </div>
-              {driver.team && (
-                <div style={{ fontSize: '0.85rem', color: '#666' }}>
-                  {driver.team}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'grid', gap: '1rem' }}>
+          {drivers.sort((a: any, b: any) => a.carNumber - b.carNumber).map((driver: any) => (
+            <div key={driver.id} style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 150px 120px', 
+              gap: '1rem', 
+              alignItems: 'center',
+              padding: '1rem',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              backgroundColor: times[driver.id]?.totalTime ? '#f0fff0' : 'white'
+            }}>
+              <div>
+                <div style={{ fontWeight: '500', color: '#333' }}>
+                  #{driver.carNumber} {driver.name}
                 </div>
-              )}
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
-                Temps (SS.mmm)
-              </label>
-              <input
-                type="text"
-                placeholder="63.456"
-                value={times[driver.id]?.inputValue || ''}
-                onChange={(e) => handleTimeChange(driver.id, 'totalTime', e.target.value)}
-                style={{ 
-                  width: '100%', 
-                  padding: '0.5rem', 
-                  border: '1px solid #ccc', 
+                {driver.team && (
+                  <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                    {driver.team}
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
+                  Temps (SS.mmm)
+                </label>
+                <input
+                  type="text"
+                  placeholder="63.456"
+                  value={times[driver.id]?.inputValue || ''}
+                  onChange={(e) => handleTimeChange(driver.id, 'totalTime', e.target.value)}
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.5rem', 
+                    border: '1px solid #ccc', 
+                    borderRadius: '4px',
+                    fontFamily: 'monospace',
+                    color: '#333',
+                    backgroundColor: 'white'
+                  }}
+                />
+              </div>
+                        
+              <button
+                onClick={() => handleSubmit(driver.id)}
+                disabled={!times[driver.id]?.totalTime}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: times[driver.id]?.totalTime ? '#28a745' : '#ccc',
+                  color: 'white',
+                  border: 'none',
                   borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  color: '#333',
-                  backgroundColor: 'white'
+                  cursor: times[driver.id]?.totalTime ? 'pointer' : 'not-allowed',
+                  fontSize: '0.85rem'
                 }}
-              />
+              >
+                💾 Valider
+              </button>
             </div>
-                       
-            <button
-              onClick={() => handleSubmit(driver.id)}
-              disabled={!times[driver.id]?.totalTime}
-              style={{
-                padding: '0.5rem 1rem',
-                background: times[driver.id]?.totalTime ? '#28a745' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: times[driver.id]?.totalTime ? 'pointer' : 'not-allowed',
-                fontSize: '0.85rem'
-              }}
-            >
-              💾 Valider
-            </button>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -2165,9 +2258,8 @@ function QualifyingInput({ drivers, race, existingResults, onTimeSubmit, formatT
       ...prev,
       [driverId]: {
         ...prev[driverId],
-        [field]: field === 'penalties' ? parseFloat(value) || 0 : parseTimeToSeconds(value),
-        inputValue: field === 'totalTime' ? value : prev[driverId]?.inputValue,
-        penaltyValue: field === 'penalties' ? value : prev[driverId]?.penaltyValue
+        [field]: parseTimeToSeconds(value), // ✨ Retire la gestion des pénalités
+        inputValue: value
       }
     }));
   };
@@ -2235,8 +2327,8 @@ function QualifyingInput({ drivers, race, existingResults, onTimeSubmit, formatT
     
     onTimeSubmit(driverData, {
       totalTime: timeData.totalTime,
-      finalTime: finalTime,
-      penalties: timeData.penalties || 0,
+      finalTime: timeData.totalTime, // ✨ Pas de pénalité ajoutée
+      penalties: 0, // ✨ Toujours 0
       bestLap: null,
       lapTimes: [],
       position: null,
@@ -2246,124 +2338,90 @@ function QualifyingInput({ drivers, race, existingResults, onTimeSubmit, formatT
 
   return (
     <div>
-      <div style={{ 
-        marginBottom: '1rem', 
-        padding: '1rem', 
-        background: '#667eea', 
-        color: 'white', 
-        borderRadius: '8px',
-        border: '1px solid #5a67d8'
-      }}>
-        <strong>ℹ️ Manche Qualificative ({race.laps} tours) :</strong> Saisissez le temps total des {race.laps} tours
-        <br />
-        <small style={{ opacity: 0.9 }}>Format : minutes:secondes.millisecondes (ex: 4:32.123) • Points selon barème 50-45-42-40-39...</small>
+      {/* Info box modernisée */}
+      <div className="session-info-box qualifying">
+        <div className="session-info-title">
+          <span>ℹ️</span>
+          Manche Qualificative ({race.laps} tours) :
+        </div>
+        <div className="session-info-text">
+          Saisissez le temps total des {race.laps} tours
+          <br />
+          <small>Format : minutes:secondes.millisecondes (ex: 4:32.123) • Points selon barème 50-45-42-40-39...</small>
+          <br />
+          <strong style={{ color: '#1565c0' }}>📝 Pas de pénalités en manches qualificatives</strong>
+        </div>
       </div>
       
-      <div style={{ display: 'grid', gap: '1rem' }}>
+      {/* Grille des pilotes uniformisée - SANS pénalités */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {drivers.sort((a: any, b: any) => a.carNumber - b.carNumber).map((driver: any) => (
-          <div key={driver.id} style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 200px 150px 100px 120px', 
-            gap: '1rem', 
-            alignItems: 'center',
-            padding: '1rem',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            backgroundColor: times[driver.id]?.totalTime ? '#f0fff0' : 'white'
-          }}>
-            <div>
-              <div style={{ fontWeight: '500', color: '#333' }}>
-                #{driver.carNumber} {driver.name}
-              </div>
-              {driver.team && (
-                <div style={{ fontSize: '0.85rem', color: '#666' }}>
-                  {driver.team}
+          <div key={driver.id} className={`timing-input-container ${times[driver.id]?.totalTime ? 'has-time' : ''}`}>
+            
+            {/* Info pilote */}
+            <div className="timing-driver-info">
+              <div className="timing-driver-details">
+                <div className="timing-driver-number">
+                  #{driver.carNumber}
                 </div>
-              )}
+                <div>
+                  <div className="timing-driver-name">
+                    {driver.name}
+                  </div>
+                  {driver.team && (
+                    <div className="timing-driver-team">
+                      🏁 {driver.team}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
             
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
-                Temps total (MM:SS.mmm)
-              </label>
-              <input
-                type="text"
-                placeholder="4:32.123"
-                value={times[driver.id]?.inputValue || ''}
-                onChange={(e) => handleTimeChange(driver.id, 'totalTime', e.target.value)}
-                style={{ 
-                  width: '100%', 
-                  padding: '0.5rem', 
-                  border: '1px solid #ccc', 
-                  borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  color: '#333',
-                  backgroundColor: 'white'
-                }}
-              />
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
-                Pénalité (s)
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                min="0"
-                placeholder="0"
-                value={times[driver.id]?.penalties || ''}
-                onChange={(e) => handleTimeChange(driver.id, 'penalties', e.target.value)}
-                style={{ 
-                  width: '100%', 
-                  padding: '0.5rem', 
-                  border: '1px solid #ccc', 
-                  borderRadius: '4px',
-                  color: '#333'
-                }}
-              />
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
-                Statut
-              </label>
-              <select
-                value={statuses[driver.id] || 'finished'}
-                onChange={(e) => handleStatusChange(driver.id, e.target.value)}
-                style={{ 
-                  width: '100%', 
-                  padding: '0.5rem', 
-                  border: '1px solid #ccc', 
-                  borderRadius: '4px',
-                  color: '#333',
-                  backgroundColor: 'white',
-                  fontSize: '0.85rem'
-                }}
+            {/* Grille de saisie SIMPLIFIÉE */}
+            <div className="timing-inputs-grid" style={{ gridTemplateColumns: '1fr 200px 120px' }}> {/* ✨ 3 colonnes au lieu de 4 */}
+              <div className="timing-input-group">
+                <label className="timing-input-label">
+                  <span>⏱️</span>
+                  Temps total (MM:SS.mmm)
+                </label>
+                <input
+                  type="text"
+                  placeholder="4:32.123"
+                  value={times[driver.id]?.inputValue || ''}
+                  onChange={(e) => handleTimeChange(driver.id, 'totalTime', e.target.value)}
+                  className="timing-input-field"
+                />
+              </div>
+              
+              {/* ✨ SUPPRIMÉ : Le champ pénalités */}
+              
+              <div className="timing-input-group">
+                <label className="timing-input-label">
+                  <span>📊</span>
+                  Statut
+                </label>
+                <select
+                  value={statuses[driver.id] || 'finished'}
+                  onChange={(e) => handleStatusChange(driver.id, e.target.value)}
+                  className="timing-select-field"
+                >
+                  {STATUS_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <button
+                onClick={() => handleSubmit(driver.id)}
+                disabled={statuses[driver.id] === 'finished' && !times[driver.id]?.totalTime}
+                className="timing-validate-btn"
               >
-                {STATUS_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <span>💾</span>
+                Valider
+              </button>
             </div>
-            
-            <button
-              onClick={() => handleSubmit(driver.id)}
-              disabled={statuses[driver.id] === 'finished' && !times[driver.id]?.totalTime}
-              style={{
-                padding: '0.5rem 1rem',
-                background: (statuses[driver.id] !== 'finished' || times[driver.id]?.totalTime) ? '#28a745' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: (statuses[driver.id] !== 'finished' || times[driver.id]?.totalTime) ? 'pointer' : 'not-allowed',
-                fontSize: '0.85rem'
-              }}
-            >
-              💾 Valider
-            </button>
           </div>
         ))}
       </div>
@@ -2507,150 +2565,126 @@ function RaceInput({ drivers, race, existingResults, onTimeSubmit, formatTime }:
 
   return (
     <div>
-      <div style={{ 
-        marginBottom: '1rem', 
-        padding: '1rem', 
-        background: isFinalPhase ? '#8e24aa' : '#1e3c72',
-        color: 'white', 
-        borderRadius: '8px',
-        border: isFinalPhase ? '1px solid #7b1fa2' : '1px solid #0d47a1'
-      }}>
-        <strong>ℹ️ {isFinalPhase ? 'Phase Finale' : 'Course'} ({race.laps} tours) :</strong> Saisissez le temps total de la course
-        {isFinalPhase && (
-          <>
-            <br />
-            <small style={{ opacity: 0.9, fontWeight: 'bold' }}>
-              🚫 Pas de pénalités pour les {race.type === 'semifinal' ? 'demi-finales' : 'finales'}
-            </small>
-          </>
-        )}
-        <br />
-        <small style={{ opacity: 0.9 }}>Format : minutes:secondes.millisecondes (ex: 7:32.123)</small>
+      {/* Info box modernisée */}
+      <div className="session-info-box race">
+        <div className="session-info-title">
+          <span>ℹ️</span>
+          {isFinalPhase ? 'Phase Finale' : 'Course'} ({race.laps} tours) :
+        </div>
+        <div className="session-info-text">
+          Saisissez le temps total de la course
+          {isFinalPhase && (
+            <>
+              <br />
+              <strong style={{ color: '#7b1fa2' }}>
+                🚫 Pas de pénalités pour les {race.type === 'semifinal' ? 'demi-finales' : 'finales'}
+              </strong>
+            </>
+          )}
+          <br />
+          <small>Format : minutes:secondes.millisecondes (ex: 7:32.123)</small>
+        </div>
       </div>
       
-      <div style={{ display: 'grid', gap: '1rem' }}>
+      {/* Grille des pilotes uniformisée */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {drivers.sort((a: any, b: any) => a.carNumber - b.carNumber).map((driver: any) => (
-          <div key={driver.id} style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isFinalPhase 
-              ? '1fr 200px 150px 120px'
-              : '1fr 200px 150px 100px 120px',
-            gap: '1rem', 
-            alignItems: 'center',
-            padding: '1rem',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            backgroundColor: times[driver.id]?.totalTime ? '#f0fff0' : 'white'
-          }}>
-            <div>
-              <div style={{ fontWeight: '500', color: '#333' }}>
-                #{driver.carNumber} {driver.name}
-              </div>
-              {driver.team && (
-                <div style={{ fontSize: '0.85rem', color: '#666' }}>
-                  {driver.team}
+          <div key={driver.id} className={`timing-input-container ${times[driver.id]?.totalTime ? 'has-time' : ''}`}>
+            
+            {/* Info pilote */}
+            <div className="timing-driver-info">
+              <div className="timing-driver-details">
+                <div className="timing-driver-number">
+                  #{driver.carNumber}
                 </div>
-              )}
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
-                Temps total (MM:SS.mmm)
-              </label>
-              <input
-                type="text"
-                placeholder="7:32.123"
-                value={times[driver.id]?.inputValue || ''}
-                onChange={(e) => handleTimeChange(driver.id, 'totalTime', e.target.value)}
-                disabled={statuses[driver.id] && statuses[driver.id] !== 'finished'}
-                style={{ 
-                  width: '100%', 
-                  padding: '0.5rem', 
-                  border: '1px solid #ccc', 
-                  borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  color: '#333',
-                  backgroundColor: (statuses[driver.id] && statuses[driver.id] !== 'finished') ? '#f5f5f5' : 'white',
-                  cursor: (statuses[driver.id] && statuses[driver.id] !== 'finished') ? 'not-allowed' : 'text'
-                }}
-              />
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
-                Statut
-              </label>
-              <select
-                value={statuses[driver.id] || 'finished'}
-                onChange={(e) => handleStatusChange(driver.id, e.target.value)}
-                style={{ 
-                  width: '100%', 
-                  padding: '0.5rem', 
-                  border: '1px solid #ccc', 
-                  borderRadius: '4px',
-                  color: '#333',
-                  backgroundColor: 'white',
-                  fontSize: '0.85rem'
-                }}
-              >
-                {STATUS_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            {!isFinalPhase && (
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '0.25rem' }}>
-                  Pénalité (s)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  placeholder="0"
-                  value={times[driver.id]?.penaltyValue || ''}
-                  onChange={(e) => handleTimeChange(driver.id, 'penalties', e.target.value)}
-                  disabled={statuses[driver.id] && statuses[driver.id] !== 'finished'}
-                  style={{ 
-                    width: '100%', 
-                    padding: '0.5rem', 
-                    border: '1px solid #ccc', 
-                    borderRadius: '4px',
-                    color: '#333',
-                    backgroundColor: (statuses[driver.id] && statuses[driver.id] !== 'finished') ? '#f5f5f5' : 'white',
-                    cursor: (statuses[driver.id] && statuses[driver.id] !== 'finished') ? 'not-allowed' : 'text'
-                  }}
-                />
+                <div>
+                  <div className="timing-driver-name">
+                    {driver.name}
+                  </div>
+                  {driver.team && (
+                    <div className="timing-driver-team">
+                      🏁 {driver.team}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+            </div>
             
-            <button
-              onClick={() => handleSubmit(driver.id)}
-              disabled={
-                (statuses[driver.id] === 'finished' || !statuses[driver.id]) && 
-                !times[driver.id]?.totalTime
-              }
-              style={{
-                padding: '0.5rem 1rem',
-                background: (
-                  (statuses[driver.id] !== 'finished' && statuses[driver.id]) || 
-                  times[driver.id]?.totalTime
-                ) ? '#28a745' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: (
-                  (statuses[driver.id] !== 'finished' && statuses[driver.id]) || 
-                  times[driver.id]?.totalTime
-                ) ? 'pointer' : 'not-allowed',
-                fontSize: '0.85rem'
+            {/* Grille de saisie - AVEC ou SANS pénalités selon le type */}
+            <div 
+              className="timing-inputs-grid" 
+              style={{ 
+                gridTemplateColumns: isFinalPhase 
+                  ? '1fr 200px 120px'        // Pas de pénalités pour finales
+                  : '1fr 150px 200px 120px', // Avec pénalités pour autres courses
+                gap: '2rem'
               }}
             >
-              💾 Valider
-            </button>
+              <div className="timing-input-group">
+                <label className="timing-input-label">
+                  <span>⏱️</span>
+                  Temps total (MM:SS.mmm)
+                </label>
+                <input
+                  type="text"
+                  placeholder="7:32.123"
+                  value={times[driver.id]?.inputValue || ''}
+                  onChange={(e) => handleTimeChange(driver.id, 'totalTime', e.target.value)}
+                  disabled={statuses[driver.id] && statuses[driver.id] !== 'finished'}
+                  className="timing-input-field"
+                />
+              </div>
+
+              {/* Champ pénalités SEULEMENT si pas finale */}
+              {!isFinalPhase && (
+                <div className="timing-input-group">
+                  <label className="timing-input-label">
+                    <span>⚠️</span>
+                    Pénalité (s)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0"
+                    value={times[driver.id]?.penaltyValue || ''}
+                    onChange={(e) => handleTimeChange(driver.id, 'penalties', e.target.value)}
+                    disabled={statuses[driver.id] && statuses[driver.id] !== 'finished'}
+                    className="timing-input-field"
+                  />
+                </div>
+              )}
+              
+              <div className="timing-input-group">
+                <label className="timing-input-label">
+                  <span>📊</span>
+                  Statut
+                </label>
+                <select
+                  value={statuses[driver.id] || 'finished'}
+                  onChange={(e) => handleStatusChange(driver.id, e.target.value)}
+                  className="timing-select-field"
+                >
+                  {STATUS_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <button
+                onClick={() => handleSubmit(driver.id)}
+                disabled={
+                  (statuses[driver.id] === 'finished' || !statuses[driver.id]) && 
+                  !times[driver.id]?.totalTime
+                }
+                className="timing-validate-btn"
+              >
+                <span>💾</span>
+                Valider
+              </button>
+            </div>
           </div>
         ))}
       </div>
