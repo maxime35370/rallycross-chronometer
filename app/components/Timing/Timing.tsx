@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../../config/firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, where, updateDoc, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import ImprovedTimeTrialsInput from './ImprovedTimeTrialsInput';
+import ImprovedRaceInput from './ImprovedRaceInput';
+import ImprovedQualifyingInput from './ImprovedQualifyingInput';
 
 // =====================================
 // INTERFACES TYPESCRIPT
@@ -411,7 +413,7 @@ const saveSemifinalPoints = async (
 // =====================================
 
 const FINAL_POINTS_SYSTEM = {
-  1: 15, 2: 12, 3: 10, 4: 8, 5: 6, 6: 5, 7: 4, 8: 3
+  1: 15, 2: 12, 3: 9, 4: 7, 5: 6, 6: 5, 7: 4, 8: 3
 };
 
 const calculateFinalPoints = (position: number): number => {
@@ -1150,7 +1152,16 @@ export default function Timing() {
               selectedRace={selectedRace}
             />
           ) : selectedRace.type === 'qualifying' ? (
-            <QualifyingInput 
+            <ImprovedQualifyingInput 
+              key={selectedRace.id}
+              drivers={driversInfo}
+              race={selectedRace}
+              existingResults={raceResults}
+              onTimeSubmit={handleTimeSubmit}
+              formatTime={formatTime}
+            />
+          ) : selectedRace.type === 'semifinal' || selectedRace.type === 'final' ? (
+            <ImprovedRaceInput 
               key={selectedRace.id}
               drivers={driversInfo}
               race={selectedRace}
@@ -1794,7 +1805,12 @@ const SemifinalPointsDisplay: React.FC<SemifinalPointsDisplayProps> = ({
           </tr>
         </thead>
         <tbody>
-          {points.filter(point => selectedRace?.drivers?.includes(point.driverId)).map((point, index) => (
+          {points
+            .filter((point, index, self) => 
+              selectedRace?.drivers?.includes(point.driverId) &&
+              self.findIndex(p => p.driverId === point.driverId) === index
+            )
+            .map((point, index) => (
             <tr key={point.id} className={
               point.status === 'finished' && index < 3 ?
                 (index === 0 ? 'podium-1' : index === 1 ? 'podium-2' : 'podium-3') : 
