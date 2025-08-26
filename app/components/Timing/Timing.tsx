@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../../config/firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, where, updateDoc, doc, getDocs, deleteDoc } from 'firebase/firestore';
+import ImprovedTimeTrialsInput from './ImprovedTimeTrialsInput';
 
 // =====================================
 // INTERFACES TYPESCRIPT
@@ -1140,7 +1141,7 @@ export default function Timing() {
           </h3>
 
           {selectedRace.type === 'timeTrials' ? (
-            <TimeTrialsInput 
+            <ImprovedTimeTrialsInput 
               key={selectedRace.id}
               drivers={driversInfo}
               existingResults={raceResults}
