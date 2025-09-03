@@ -457,7 +457,6 @@ export default function MeetingStandingsManagement() {
   // Sauvegarder les points championnat du meeting
   const saveChampionshipMeetingPoints = async () => {
     try {
-      console.log('🏆 Calcul des points championnat du meeting...');
 
       // Utiliser TOUS les pilotes engagés
       const allEngagedDriversData = engagedDrivers;
@@ -662,7 +661,6 @@ export default function MeetingStandingsManagement() {
       .slice(0, maxDrivers)
       .map(d => d.name);
 
-      console.log('Pilotes sélectionnés:', rankedDrivers); // Pour débugger
     // Dans le composant SimpleEvolutionChart
     const legendRows = getGridRows(rankedDrivers.length, 3); // 3 colonnes par défaut
     const dynamicMarginBottom = Math.max(2, legendRows * 1.5); // 1.5rem par ligne, minimum 2rem  

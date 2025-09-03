@@ -203,8 +203,6 @@ const saveQualifyingPoints = async (
   selectedYear: number
 ): Promise<void> => {
   try {
-    console.log('🔄 Calcul points manche qualificative:', selectedRace.name);
-    
     // Compter les "engagés présents"
     const engagesPresents = raceResults.filter(result => 
       result.status === 'finished' || 
@@ -213,8 +211,6 @@ const saveQualifyingPoints = async (
       result.status === 'dsq_race' || 
       result.status === 'dsq_general'
     ).length;
-    
-    console.log('👥 Engagés présents dans cette manche:', engagesPresents);
     
     // Trier les pilotes qui ont terminé par temps
     const finishedResults = raceResults
@@ -264,8 +260,6 @@ const saveQualifyingPoints = async (
     });
     
     await Promise.all(pointsPromises);
-    console.log('✅ Points manche qualificative sauvegardés');
-    
   } catch (error) {
     console.error('❌ Erreur sauvegarde points qualifs:', error);
   }
@@ -306,7 +300,6 @@ const saveSemifinalPoints = async (
   selectedYear: number
 ): Promise<void> => {
   try {
-    console.log('🔄 Calcul points demi-finale:', selectedRace.name);
     
     // Filtrer seulement les résultats des pilotes assignés à cette demi-finale
     const raceSpecificResults = raceResults.filter(result => 
@@ -400,9 +393,7 @@ const saveSemifinalPoints = async (
       await addDoc(collection(db, 'semifinalPoints'), semifinalPointsData);
     });
     
-    await Promise.all([...finishedPointsPromises, ...dnsPointsPromises, ...dsqPointsPromises]);
-    console.log('✅ Points demi-finale sauvegardés');
-    
+    await Promise.all([...finishedPointsPromises, ...dnsPointsPromises, ...dsqPointsPromises]);    
   } catch (error) {
     console.error('❌ Erreur sauvegarde points demi-finale:', error);
   }
@@ -443,7 +434,6 @@ const saveFinalPoints = async (
   selectedYear: number
 ): Promise<void> => {
   try {
-    console.log('🔄 Calcul points finale:', selectedRace.name);
     const raceSpecificResults = raceResults.filter(result => 
         selectedRace.drivers.includes(result.driverId)
     );
@@ -506,9 +496,7 @@ const saveFinalPoints = async (
       await addDoc(collection(db, 'finalPoints'), finalPointsData);
     });
     
-    await Promise.all([...finishedPointsPromises, ...dnsPointsPromises]);
-    console.log('✅ Points finale sauvegardés');
-    
+    await Promise.all([...finishedPointsPromises, ...dnsPointsPromises]);    
   } catch (error) {
     console.error('❌ Erreur sauvegarde points finale:', error);
   }
@@ -677,8 +665,6 @@ export default function Timing() {
   // FONCTION de recalcul immédiat des points essais chronos
   const recalculateTimeTrialsPointsImmediate = async () => {
     try {
-      console.log('🔄 Recalcul immédiat des points essais chronos...');
-      
       const q = query(
         collection(db, 'results'),
         where('raceId', '==', selectedRace.id)
@@ -719,9 +705,7 @@ export default function Timing() {
       });
 
       await Promise.all(pointsPromises);
-      setPointsRefreshKey(prev => prev + 1);
-      console.log('✅ Points essais chronos recalculés');
-      
+      setPointsRefreshKey(prev => prev + 1);      
     } catch (error) {
       console.error('❌ Erreur recalcul points essais chronos:', error);
     }
@@ -729,9 +713,7 @@ export default function Timing() {
 
   // FONCTION de recalcul immédiat des points qualificatives
   const recalculateQualifyingPointsImmediate = async () => {
-    try {
-      console.log('🔄 Recalcul immédiat des points qualificatives...');
-      
+    try {     
       const q = query(
         collection(db, 'results'),
         where('raceId', '==', selectedRace.id)
@@ -752,9 +734,7 @@ export default function Timing() {
         selectedYear
       );
       
-      setQualifyingPointsRefreshKey(prev => prev + 1);
-      console.log('✅ Points qualificatives recalculés');
-      
+      setQualifyingPointsRefreshKey(prev => prev + 1);      
     } catch (error) {
       console.error('❌ Erreur recalcul points qualifs:', error);
     }
@@ -762,9 +742,7 @@ export default function Timing() {
 
   // FONCTION de recalcul immédiat des points demi-finales
   const recalculateSemifinalPointsImmediate = async () => {
-    try {
-      console.log('🔄 Recalcul immédiat des points demi-finale...');
-      
+    try {      
       const q = query(
         collection(db, 'results'),
         where('raceId', '==', selectedRace.id)
@@ -785,9 +763,7 @@ export default function Timing() {
         selectedYear
       );
       
-      setSemifinalPointsRefreshKey(prev => prev + 1);
-      console.log('✅ Points demi-finale recalculés');
-      
+      setSemifinalPointsRefreshKey(prev => prev + 1);     
     } catch (error) {
       console.error('❌ Erreur recalcul points demi-finale:', error);
     }
@@ -795,9 +771,7 @@ export default function Timing() {
 
   // FONCTION de recalcul immédiat des points finales
   const recalculateFinalPointsImmediate = async () => {
-    try {
-      console.log('🔄 Recalcul immédiat des points finale...');
-      
+    try {      
       const q = query(
         collection(db, 'results'),
         where('raceId', '==', selectedRace.id)
@@ -818,9 +792,7 @@ export default function Timing() {
         selectedYear
       );
       
-      setFinalPointsRefreshKey(prev => prev + 1);
-      console.log('✅ Points finale recalculés');
-      
+      setFinalPointsRefreshKey(prev => prev + 1);      
     } catch (error) {
       console.error('❌ Erreur recalcul points finale:', error);
     }
@@ -1376,9 +1348,6 @@ const TimeTrialsPointsDisplay: React.FC<TimeTrialsPointsDisplayProps> = ({
       setPoints([]);
       return;
     }
-
-    console.log('🔄 Rechargement points essais chronos (refreshKey:', refreshKey, ')');
-
     const q = query(
       collection(db, 'timeTrialsPoints'),
       where('meetingId', '==', meetingId),
@@ -1392,8 +1361,6 @@ const TimeTrialsPointsDisplay: React.FC<TimeTrialsPointsDisplayProps> = ({
       querySnapshot.forEach(doc => {
         pointsData.push({ id: doc.id, ...doc.data() } as TimeTrialsPoints);
       });
-      
-      console.log('🔄 Points essais chronos mis à jour:', pointsData.length);
       setPoints(pointsData);
     });
 
@@ -1513,8 +1480,6 @@ const QualifyingPointsDisplay: React.FC<QualifyingPointsDisplayProps> = ({
       return;
     }
 
-    console.log('🔄 Rechargement points qualifs (refreshKey:', refreshKey, ')');
-
     const q = query(
       collection(db, 'qualifyingPoints'),
       where('raceId', '==', raceId),
@@ -1528,7 +1493,6 @@ const QualifyingPointsDisplay: React.FC<QualifyingPointsDisplayProps> = ({
         pointsData.push({ id: doc.id, ...doc.data() } as QualifyingPoints);
       });
       
-      console.log('🔄 Points qualifs mis à jour:', pointsData.length);
       setPoints(pointsData);
     });
 
@@ -1724,7 +1688,6 @@ const SemifinalPointsDisplay: React.FC<SemifinalPointsDisplayProps> = ({
       return;
     }
 
-    console.log('🔄 Rechargement points demi-finale (refreshKey:', refreshKey, ')');
 
     const q = query(
       collection(db, 'semifinalPoints'),
@@ -1738,8 +1701,6 @@ const SemifinalPointsDisplay: React.FC<SemifinalPointsDisplayProps> = ({
       querySnapshot.forEach(doc => {
         pointsData.push({ id: doc.id, ...doc.data() } as SemifinalPoints);
       });
-      
-      console.log('🔄 Points demi-finale mis à jour:', pointsData.length);
       setPoints(pointsData);
     });
 
@@ -1900,8 +1861,6 @@ const FinalPointsDisplay: React.FC<FinalPointsDisplayProps> = ({
       return;
     }
 
-    console.log('🔄 Rechargement points finale (refreshKey:', refreshKey, ')');
-
     const q = query(
       collection(db, 'finalPoints'),
       where('raceId', '==', raceId),
@@ -1915,7 +1874,6 @@ const FinalPointsDisplay: React.FC<FinalPointsDisplayProps> = ({
         pointsData.push({ id: doc.id, ...doc.data() } as FinalPoints);
       });
       
-      console.log('🔄 Points finale mis à jour:', pointsData.length);
       setPoints(pointsData);
     });
 

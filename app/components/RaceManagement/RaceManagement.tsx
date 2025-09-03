@@ -41,11 +41,6 @@ export default function RaceManagement() {
       setRaces([]);
       return;
     }
-
-    console.log('Recherche sessions:', {
-    meetingId: selectedMeeting,
-    category: selectedCategory
-  });
     const q = query(
       collection(db, 'races'),
       where('meetingId', '==', selectedMeeting),
@@ -54,20 +49,9 @@ export default function RaceManagement() {
     );
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  console.log('=== COMPARAISON ===');
-  console.log('selectedMeeting:', selectedMeeting);
-  console.log('selectedCategory:', selectedCategory);
-  console.log('Sessions trouvées:', querySnapshot.size);
   
   querySnapshot.forEach((doc) => {
     const data = doc.data();
-    console.log('Session trouvée:', {
-      name: data.name,
-      meetingId: data.meetingId,
-      category: data.category,
-      matchMeeting: data.meetingId === selectedMeeting,
-      matchCategory: data.category === selectedCategory
-    });
   });
   
   const racesData: any[] = [];

@@ -186,7 +186,6 @@ export default function ImprovedRaceInput({
   };
 
   const saveResult = async (driverId: string) => {
-    console.log('Saving result for:', driverId);
     const driverData = drivers.find(d => d.id === driverId);
     const timeData = times[driverId];
     const status = statuses[driverId] || 'finished';

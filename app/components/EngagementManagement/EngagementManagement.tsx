@@ -100,11 +100,6 @@ export default function EngagementManagement() {
         where('meetingId', '==', selectedMeeting),
         where('category', '==', selectedCategory)
       );
-      console.log('Filtre pilotes:', {
-  selectedYear,
-  selectedCategory,
-  selectedMeeting
-});
       const existingEngagements = await getDocs(q);
       
       const meeting = meetings.find(m => m.id === selectedMeeting);
